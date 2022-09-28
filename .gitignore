@@ -1,0 +1,11 @@
+**/.terraform
+**/*.tfstate
+**/*.tfstate.backup
+**/.terraform.lock.hcl
+**/bin/**
+**/docs/build/**
+**/*.zip
+**/*.tar
+**/*.gz
+**/.venv
+**/*.lock.info

@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: aws-synthetics-heartbeat-canary
+  title: AWS Canary Heartbeat Monitor
+  description: An AWS Lambda-based Canary for monitoring the health of service endpoints.
+  ## NOTE: UNCOMMENT AND ADJUST WHEN DOCS WORKING
+  # links:
+  #   - url: TF DOC URL GOES HERE ONCE GH PAGES IS UP
+  #     title: Documentation
+  annotations:
+  ## NOTE: see above
+  #   backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: AutomationLibrary/aws-synthetics-heartbeat-canary
+  tags:
+    - aws
+    - terraform
+spec:
+  type: library
+  lifecycle: production
+  owner: AutomationLibrary/BrightLabs
