@@ -22,12 +22,4 @@ terraform {
 
 provider "aws" {
   region = var.region
-  
-  ### Commented out For Demo - Use this Block for integration into an existing Terraform implementation if you already have predefined role ###
-
-  # assume_role {
-  #     role_arn = "arn:aws:iam::${var.target_account_id}:role/${var.target_role_name}"
-  #     session_name = "Terraform"
-  # }
-  
 }
