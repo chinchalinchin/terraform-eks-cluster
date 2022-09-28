@@ -3,6 +3,26 @@
 
 ## Setup
 
+### Cluster Role
+
+This service role already exists in **NorthernLights** under the name, `AWSRoleForEKS`,
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+
 ### Pod Execution Role
 
 In order for Fargate to manage EKS pods for our cluster, we need a role `AutomationLibraryEKSPodExecutionRole` with the following policy,
@@ -34,6 +54,7 @@ In order for Fargate to manage EKS pods for our cluster, we need a role `Automat
 - [Deploying a Sample Application](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
 - [Pod Execution IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html)
 ### eksctl Documentation
+- [Introduction](https://eksctl.io/introduction/)
 - [Fargate Support](https://eksctl.io/usage/fargate-support/)
 ### Kubernetes Documentation
 - [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
