@@ -15,7 +15,7 @@ In order for Fargate to manage EKS pods for our cluster, we need a role `Automat
       "Effect": "Allow",
       "Condition": {
          "ArnLike": {
-            "aws:SourceArn": "arn:aws:eks:<account-region>:<account-number>:fargateprofile/automation-library/*"
+            "aws:SourceArn": "arn:aws:eks:<account-region>:<account-number>:fargateprofile/automation-library*/*"
          }
       },
       "Principal": {
@@ -33,6 +33,8 @@ In order for Fargate to manage EKS pods for our cluster, we need a role `Automat
 - [Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html)
 - [Deploying a Sample Application](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
 - [Pod Execution IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html)
+### eksctl Documentation
+- [Fargate Support](https://eksctl.io/usage/fargate-support/)
 ### Kubernetes Documentation
-
+- [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 ### Helm Documentation

@@ -1,0 +1,36 @@
+# eksctl create cluster -f fargate-cluster-config.yaml
+# SEE: https://eksctl.io/usage/fargate-support/#creating-a-cluster-with-fargate-support-using-a-config-file
+
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: automation-library-cluster
+  region: us-east-1
+
+fargateProfiles:
+  - name: automation-library-k8s
+    selectors:
+      # All workloads in the "default" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: default
+      # All workloads in the "kube-system" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: kube-system
+  - name: automation-library-dev
+    selectors:
+      # All workloads in the "dev" Kubernetes namespace matching the following
+      # label selectors will be scheduled onto Fargate:
+      - namespace: dev
+        labels:
+          env: dev
+          checks: passed
+  - name: automation-library-prod
+    selectors:
+      # All workloads in the "prod" Kubernetes namespace matching the following
+      # label selectors will be scheduled onto Fargate:
+      - namespace: dev
+        labels:
+          env: dev
+          checks: passed
