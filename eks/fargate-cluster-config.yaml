@@ -1,3 +1,6 @@
+# eksctl create fargateprofile -f fargate-example-cluster.yaml
+# SEE: https://eksctl.io/usage/fargate-support/#designing-fargate-profiles
+
 # eksctl create cluster -f fargate-cluster-config.yaml
 # SEE: https://eksctl.io/usage/fargate-support/#creating-a-cluster-with-fargate-support-using-a-config-file
 
