@@ -30,7 +30,7 @@ fargateProfiles:
     selectors:
       # All workloads in the "prod" Kubernetes namespace matching the following
       # label selectors will be scheduled onto Fargate:
-      - namespace: dev
+      - namespace: prod
         labels:
-          env: dev
+          env: prod
           checks: passed
