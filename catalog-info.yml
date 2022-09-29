@@ -11,9 +11,11 @@ metadata:
   annotations:
   ## NOTE: see above
   #   backstage.io/techdocs-ref: dir:.
-    github.com/project-slug: AutomationLibrary/aws-synthetics-heartbeat-canary
+    github.com/project-slug: AutomationLibrary/aws-eks-managed-cluster
   tags:
     - aws
+    - eks
+    - kubernetes
     - terraform
 spec:
   type: library
