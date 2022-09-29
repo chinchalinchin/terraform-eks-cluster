@@ -27,6 +27,23 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 
 }
 
+resource "aws_eks_node_group" "automation-library-ng1" {
+    cluster_name = aws_eks_cluster.automation_library_cluster.name
+    node_group_name = "automation-library-node-group-1"
+    node_role_arn = var.node_role_arn
+    subnet_ids = var.subnet_ids
+
+    scaling_config {
+      desired_size = 1
+      max_size = 2
+      min_size = 1
+    }
+
+    update_config {
+      max_unavailable = 1
+    }
+}
+
 output "endpoint" {
     value = aws_eks_cluster.automation_library_cluster.endpoint
 }

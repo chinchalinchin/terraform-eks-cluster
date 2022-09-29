@@ -4,18 +4,23 @@ variable "cluster_role_arn" {
     type = string
 }
 
+variable "node_role_arn" {
+    description = "IAM role arn for EKS Node Group"
+    type = string
+}
+
 variable "kms_key_arn" {
     description = "Customer managed key ARN for AWS KMS"
     type = string
 }
 
 variable "subnet_ids"{
-    description = "List of subnet IDs into which to deploy Fargate pods"
+    description = "List of subnet IDs into which to cluster pods"
     type = list
 }
 
-variable "security_group_ids"{
-    description = "List of security IDs into which to deploy Fargate pods"
+variable "control_plane_sg_ids"{
+    description = "List of security groups ID into which the control plane deploys"
     type = list 
 }
 # defaultable
