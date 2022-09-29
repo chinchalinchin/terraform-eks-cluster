@@ -1,4 +1,4 @@
-# aws-eks-fargate-cluster
+# aws-eks-managed-cluster
 
 
 ## Setup
@@ -23,9 +23,9 @@ This service role already exists in **NorthernLights** under the name, `AWSRoleF
 ```
 
 
-### Pod Execution Role
+### Fargate Pod Execution Role
 
-In order for Fargate to manage EKS pods for our cluster, we need a role `AutomationLibraryEKSPodExecutionRole` with the following policy,
+In order for **EKS** to host pods on **Fargate** within the cluster, the role `AutomationLibraryEKSPodExecutionRole` with the following policy attached is required,
 
 ```json
 {
@@ -45,6 +45,18 @@ In order for Fargate to manage EKS pods for our cluster, we need a role `Automat
     }
   ]
 }
+```
+
+**NOTE**: **Gitlab** does not [recommend running its containers on Fargate](https://docs.gitlab.com/charts/quickstart/index.html#create-a-kubernetes-cluster)
+
+### Kube Config
+
+Update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
+
+```shell
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name automation-library-cluster
 ```
 
 ## References
