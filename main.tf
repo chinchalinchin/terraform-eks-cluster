@@ -24,8 +24,8 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     vpc_config {
         subnet_ids = var.subnet_ids
         security_group_ids = var.control_plane_sg_ids
-        endpoint_private_access = false
-        endpoint_public_access = true
+        endpoint_private_access = true
+        endpoint_public_access = false
     }
 
 }
