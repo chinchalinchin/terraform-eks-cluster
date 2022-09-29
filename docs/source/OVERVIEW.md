@@ -1,11 +1,12 @@
 # aws-eks-managed-cluster
 
+A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** managed nodes.
 
-## Setup
+## IAM Roles
 
 ### Cluster Role
 
-This service role already exists in **NorthernLights** under the name, `AWSRoleForEKS`,
+The service role for **EKS** already exists in **NorthernLights** under the name, `AWSRoleForEKS`,
 
 ```json
 {
@@ -23,31 +24,9 @@ This service role already exists in **NorthernLights** under the name, `AWSRoleF
 ```
 
 
-### Fargate Pod Execution Role
+### Node Role
 
-In order for **EKS** to host pods on **Fargate** within the cluster, the role `AutomationLibraryEKSPodExecutionRole` with the following policy attached is required,
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Condition": {
-         "ArnLike": {
-            "aws:SourceArn": "arn:aws:eks:<account-region>:<account-number>:fargateprofile/automation-library*/*"
-         }
-      },
-      "Principal": {
-        "Service": "eks-fargate-pods.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-```
-
-**NOTE**: **Gitlab** does not [recommend running its containers on Fargate](https://docs.gitlab.com/charts/quickstart/index.html#create-a-kubernetes-cluster)
+TODO
 
 ### Kube Config
 
@@ -58,6 +37,10 @@ aws eks update-kubeconfig \
   --region us-east-1 \
   --name automation-library-cluster
 ```
+
+<!-- BEGIN_TF_DOCS -->
+  Placeholder for Terraform Docs
+<!-- END_TF_DOCS -->
 
 ## References
 ### AWS EKS Documentation
