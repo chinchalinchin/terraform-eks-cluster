@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "automation_library_cluster" {
-    name     = "automation-library-cluster"
+    name = "automation-library-cluster"
     
     role_arn = var.cluster_role_arn
 
@@ -12,7 +12,10 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     ]
 
     encryption_config {
-        resources = ["secrets"]
+        resources = [
+            "secrets"
+        ]
+
         provider {
             key_arn = var.kms_key_arn
         }
@@ -21,8 +24,8 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     vpc_config {
         subnet_ids = var.subnet_ids
         security_group_ids = var.security_group_ids
-        endpoint_private_access = true
-        endpoint_public_access = false
+        endpoint_private_access = false
+        endpoint_public_access = true
     }
 
 }
