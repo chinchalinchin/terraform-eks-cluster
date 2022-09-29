@@ -57,10 +57,15 @@ In order for Fargate to manage EKS pods for our cluster, we need a role `Automat
 ### eksctl Documentation
 - [Introduction](https://eksctl.io/introduction/)
 - [Fargate Support](https://eksctl.io/usage/fargate-support/)
+- [eksctl Config Samples](https://github.com/weaveworks/eksctl/tree/main/examples)
 ### Gitlab Documentation
 - [Docker Image](https://docs.gitlab.com/ee/install/docker.html)
 - [Helm Chart](https://docs.gitlab.com/charts/)
+- [Test Gitlab on AWS EKS](https://docs.gitlab.com/charts/quickstart/)
 ### Kubernetes Documentation
 - [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 ### Terraform Documentation
 - [EKS Cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
+
+## Utilties
+- [yq: JSON-to-YAML mapping CLI](https://mikefarah.gitbook.io/yq/)
