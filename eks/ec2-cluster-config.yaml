@@ -12,7 +12,7 @@ metadata:
   name: automation-library-cluster
   region: us-east-1
 
-nodeGroups:
+managedNodeGroups:
   - name: automation-library-k8s
     instanceName: al-k8s-engine
     instanceType: m5.large

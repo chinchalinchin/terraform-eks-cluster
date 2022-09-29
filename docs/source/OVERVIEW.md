@@ -66,6 +66,7 @@ In order for Fargate to manage EKS pods for our cluster, we need a role `Automat
 - [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 ### Terraform Documentation
 - [EKS Cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
+- [EKS Node Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
 
 ## Utilties
 - [yq: JSON-to-YAML mapping CLI](https://mikefarah.gitbook.io/yq/)
