@@ -1,15 +1,4 @@
-# https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files
-cluster_role_arn = "arn goes here"
-node_role_arn = "arn goes here"
-kms_key_arn = "arn goes here"
-subnet_ids = [
-    "id goes here",
-    "id goes here"
-]
-control_plane_sg_ids = [
-    "id goes here",
-    "id goes here"
-]
-remote_access_sg_ids = [
-    "id goes here"
-]
+# SEE: https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files
+# NOTE: ARNS OR IDS SHOULD BE PASSED IN USING ENVIRONMENT VARIABLES
+#       SEE: https://www.terraform.io/cli/config/environment-variables
+ec2_ssh_key = "al_cluster_key"
