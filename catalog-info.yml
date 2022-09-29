@@ -1,13 +1,13 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: aws-synthetics-heartbeat-canary
-  title: AWS Canary Heartbeat Monitor
-  description: An AWS Lambda-based Canary for monitoring the health of service endpoints.
+  name: aws-eks-managed-cluster
+  title: AWS EKS Managed EC2 Node Cluster
+  description: An EKS cluster 
   ## NOTE: UNCOMMENT AND ADJUST WHEN DOCS WORKING
-  # links:
-  #   - url: TF DOC URL GOES HERE ONCE GH PAGES IS UP
-  #     title: Documentation
+  links:
+    - url: https://pages.github.boozallencsn.com/AutomationLibrary/aws-eks-managed-cluster/index.html
+      title: Documentation
   annotations:
   ## NOTE: see above
   #   backstage.io/techdocs-ref: dir:.
