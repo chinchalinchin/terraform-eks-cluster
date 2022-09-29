@@ -9,3 +9,5 @@
 **/*.gz
 **/.venv
 **/*.lock.info
+**/*.env
+!**/*.sample.env

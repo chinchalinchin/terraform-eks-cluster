@@ -10,3 +10,6 @@ control_plane_sg_ids = [
     "id goes here",
     "id goes here"
 ]
+remote_access_sg_ids = [
+    "id goes here"
+]

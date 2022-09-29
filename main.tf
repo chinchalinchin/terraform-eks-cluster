@@ -29,6 +29,9 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 
 resource "aws_eks_node_group" "automation-library-ng1" {
     cluster_name = aws_eks_cluster.automation_library_cluster.name
+    instance_types = [
+        "t3.medium"
+    ]
     node_group_name = "automation-library-node-group-1"
     node_role_arn = var.node_role_arn
     subnet_ids = var.subnet_ids
@@ -41,6 +44,11 @@ resource "aws_eks_node_group" "automation-library-ng1" {
 
     update_config {
       max_unavailable = 1
+    }
+
+    remote_access {
+        ec2_ssh_key = var.ec2_ssh_key
+        source_security_group_ids = var.remote_access_sg_ids
     }
 }
 
