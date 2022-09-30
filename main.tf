@@ -13,9 +13,9 @@ resource "aws_security_group" "control_plane_sg" {
     vpc_id      = var.vpc_id
 
     tags = {
-        organization = "AutomationLibrary"
-        team = "BrightLabs"
-        name = "control_plane"
+        organization    = "AutomationLibrary"
+        team            = "BrightLabs"
+        name            = "control_plane"
     }
 }
 
@@ -42,7 +42,7 @@ resource "aws_security_group_rule" "control_plane_egress" {
 
 resource "aws_security_group" "remote_access_sg" {
     name        = "remote-access-sg"
-    description = "Allow TLS inbound traffic"
+    description = "Allow inbound SSH traffic"
     vpc_id      = var.vpc_id
 
     ingress {
@@ -54,9 +54,9 @@ resource "aws_security_group" "remote_access_sg" {
     }
 
     tags = {
-        oganization = "AutomationLibrary"
-        team = "BrightLabs"
-        name = "ssh"
+        oganization     = "AutomationLibrary"
+        team            = "BrightLabs"
+        name            = "ssh"
     }
 } 
 
