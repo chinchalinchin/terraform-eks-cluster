@@ -1,1 +1,4 @@
 minimum_severity: MEDIUM
+
+exclude:
+  - aws-ec2-no-public-egress-sgr

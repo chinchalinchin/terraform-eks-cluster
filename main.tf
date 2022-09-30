@@ -13,28 +13,32 @@ resource "aws_security_group" "control_plane_sg" {
     description = "Allow TLS inbound traffic"
     vpc_id      = var.vpc_id
 
-    ingress {
-        description      = "VPC Ingress"
-        from_port        = 0
-        to_port          = 0
-        protocol         = "-1"
-        cidr_blocks      = ["0.0.0.0/0"]
-    }
-
-    egress {
-        description      = "VPC Egress"
-        from_port        = 0
-        to_port          = 0
-        protocol         = "-1"
-        cidr_blocks      = ["0.0.0.0/0"]
-    }
-
     tags = {
         organization = "AutomationLibrary"
         team = "BrightLabs"
         name = "control_plane"
     }
-} 
+}
+
+resource "aws_security_group_rule" "control_plane_ingress" {
+  type                      = "ingress"
+  from_port                 = 0
+  to_port                   = 0
+  protocol                  = "-1"
+  security_group_id         = aws_security_group.remote_access_sg[0].id
+  source_security_group_id  = aws_security_group.remote_access_sg[0].id
+}
+
+resource "aws_security_group_rule" "control_plane_egress" {
+    type                    = "egress"
+    from_port               = 0
+    to_port                 = 0
+    protocol                = "-1"
+    cidr_blocks             = ["0.0.0.0/0"]
+    security_group_id         = aws_security_group.remote_access_sg[0].id
+}
+
+
 resource "aws_security_group" "remote_access_sg" {
     name        = "remote-access-sg"
     description = "Allow TLS inbound traffic"
