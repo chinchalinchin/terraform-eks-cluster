@@ -1,6 +1,7 @@
 resource "aws_kms_key" "automation_library_key" {
     description = "KMS key for encrypting cluster secrets"
     deletion_window_in_days = 10
+    enable_key_rotation = true
     custom_master_key_spec = "SYMMETRIC_DEFAULT"
     custom_key_store_id = "automation-library-cluster-key"
     key_usage = "ENCRYPT_DECRYPT"
