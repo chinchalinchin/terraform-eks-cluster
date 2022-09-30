@@ -69,6 +69,7 @@ aws eks update-kubeconfig \
 - [EKS Node Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
 - [KMS Key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)
 - [Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
+- [Security Group Rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)
 
 ## Utilties
 - [yq: JSON-to-YAML mapping CLI](https://mikefarah.gitbook.io/yq/)

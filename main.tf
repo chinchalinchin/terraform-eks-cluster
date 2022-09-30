@@ -21,15 +21,17 @@ resource "aws_security_group" "control_plane_sg" {
 }
 
 resource "aws_security_group_rule" "control_plane_ingress" {
-  type                      = "ingress"
-  from_port                 = 0
-  to_port                   = 0
-  protocol                  = "-1"
-  security_group_id         = aws_security_group.remote_access_sg[0].id
-  source_security_group_id  = aws_security_group.remote_access_sg[0].id
+    description               = "Restrict incoming traffic to the security group itself."
+    type                      = "ingress"
+    from_port                 = 0
+    to_port                   = 0
+    protocol                  = "-1"
+    security_group_id         = aws_security_group.remote_access_sg[0].id
+    source_security_group_id  = aws_security_group.remote_access_sg[0].id
 }
 
 resource "aws_security_group_rule" "control_plane_egress" {
+    description             = "Allow all external traffic, regardless of destination."
     type                    = "egress"
     from_port               = 0
     to_port                 = 0
