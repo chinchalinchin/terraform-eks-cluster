@@ -9,11 +9,6 @@ variable "node_role_arn" {
     type = string
 }
 
-variable "kms_key_arn" {
-    description = "Customer managed key ARN for AWS KMS"
-    type = string
-}
-
 variable "subnet_ids"{
     description = "List of subnet IDs into which to cluster pods"
     type = list

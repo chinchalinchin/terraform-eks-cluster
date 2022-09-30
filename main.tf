@@ -1,3 +1,12 @@
+resource "aws_kms_key" "automation_library_key" {
+    description = "KMS key for encrypting cluster secrets"
+    deletion_window_in_days = 10
+    custom_master_key_spec = "SYMMETRIC_DEFAULT"
+    custom_key_store_id = "automation-library-cluster-key"
+    key_usage = "ENCRYPT_DECRYPT"
+    is_enabled = true
+}
+
 resource "aws_eks_cluster" "automation_library_cluster" {
     name = "automation-library-cluster"
     
@@ -17,7 +26,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
         ]
 
         provider {
-            key_arn = var.kms_key_arn
+            key_arn = aws_kms_key.automation_library_key.arn
         }
     }
 
@@ -61,4 +70,12 @@ output "endpoint" {
 
 output "kubeconfig-certificate-authority-data" {
     value = aws_eks_cluster.automation_library_cluster.certificate_authority[0].data
+}
+
+output "kms-key-arn" {
+    value = aws_kms_key.automation_library_key.arn
+}
+
+output "kms-key-id" {
+    value = aws_kms_key.automation_library_key.id
 }

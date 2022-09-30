@@ -46,9 +46,14 @@ aws eks update-kubeconfig \
 <!-- END_TF_DOCS -->
 
 ## References
+### Repositories
+- [aws/amazon-vpc-cni-k8s](https://github.com/aws/amazon-vpc-cni-k8s)
 ### AWS EKS Documentation
+- [Security Best Practices](https://aws.github.io/aws-eks-best-practices/security/docs/)
+- [Security Group Considerations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
 - [Getting Started](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 - [Deploying a Sample Application](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
+- [Proposal: CNI Plugin For Kubernetes networking over AWS VPC](https://github.com/aws/amazon-vpc-cni-k8s)
 - [VPC Considerations](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
 ### eksctl Documentation
 - [Introduction](https://eksctl.io/introduction/)
@@ -62,6 +67,8 @@ aws eks update-kubeconfig \
 ### Terraform Documentation
 - [EKS Cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 - [EKS Node Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
+- [KMS Key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)
+- [Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
 
 ## Utilties
 - [yq: JSON-to-YAML mapping CLI](https://mikefarah.gitbook.io/yq/)
