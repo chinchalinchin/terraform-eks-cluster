@@ -1,19 +1,70 @@
 resource "aws_kms_key" "automation_library_key" {
-    description = "KMS key for encrypting cluster secrets"
+    description             = "KMS key for encrypting cluster secrets"
     deletion_window_in_days = 10
-    enable_key_rotation = true
-    custom_master_key_spec = "SYMMETRIC_DEFAULT"
-    custom_key_store_id = "automation-library-cluster-key"
-    key_usage = "ENCRYPT_DECRYPT"
-    is_enabled = true
+    enable_key_rotation     = true
+    custom_master_key_spec  = "SYMMETRIC_DEFAULT"
+    custom_key_store_id     = "automation-library-cluster-key"
+    key_usage               = "ENCRYPT_DECRYPT"
+    is_enabled              = true
 }
 
-resource "aws_eks_cluster" "automation_library_cluster" {
-    name = "automation-library-cluster"
-    
-    role_arn = var.cluster_role_arn
+resource "aws_security_group" "control_plane_sg" {
+    name        = "control-plane-sg"
+    description = "Allow TLS inbound traffic"
+    vpc_id      = var.vpc_id
 
-    enabled_cluster_log_types = [
+    ingress {
+        description      = "VPC Ingress"
+        from_port        = 0
+        to_port          = 0
+        protocol         = "-1"
+        cidr_blocks      = ["0.0.0.0/0"]
+    }
+
+    egress {
+        description      = "VPC Egress"
+        from_port        = 0
+        to_port          = 0
+        protocol         = "-1"
+        cidr_blocks      = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "allow_tls"
+    }
+} 
+resource "aws_security_group" "remote_access_sg" {
+    name        = "remote-access-sg"
+    description = "Allow TLS inbound traffic"
+    vpc_id      = var.vpc_id
+
+    ingress {
+        description      = "VPC Ingress"
+        from_port        = 0
+        to_port          = 0
+        protocol         = "-1"
+        cidr_blocks      = ["0.0.0.0/0"]
+    }
+
+    egress {
+        description      = "VPC Egress"
+        from_port        = 0
+        to_port          = 0
+        protocol         = "-1"
+        cidr_blocks      = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "allow_tls"
+    }
+} 
+
+resource "aws_eks_cluster" "automation_library_cluster" {
+    name                        = "automation-library-cluster"
+    
+    role_arn                    = var.cluster_role_arn
+
+    enabled_cluster_log_types   = [
         "api", 
         "audit", 
         "authenticator", 
@@ -22,7 +73,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     ]
 
     encryption_config {
-        resources = [
+        resources   = [
             "secrets"
         ]
 
@@ -32,36 +83,36 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
     vpc_config {
-        subnet_ids = var.subnet_ids
-        security_group_ids = var.control_plane_sg_ids
+        subnet_ids              = var.subnet_ids
+        security_group_ids      = aws_security_group.control_plane_sg.*.id
         endpoint_private_access = true
-        endpoint_public_access = false
+        endpoint_public_access  = false
     }
 
 }
 
 resource "aws_eks_node_group" "automation-library-ng1" {
-    cluster_name = aws_eks_cluster.automation_library_cluster.name
-    instance_types = [
+    cluster_name        = aws_eks_cluster.automation_library_cluster.name
+    instance_types      = [
         "t3.medium"
     ]
-    node_group_name = "automation-library-node-group-1"
-    node_role_arn = var.node_role_arn
-    subnet_ids = var.subnet_ids
+    node_group_name     = "automation-library-node-group-1"
+    node_role_arn       = var.node_role_arn
+    subnet_ids          = var.subnet_ids
 
     scaling_config {
-      desired_size = 1
-      max_size = 2
-      min_size = 1
+      desired_size      = 1
+      max_size          = 2
+      min_size          = 1
     }
 
     update_config {
-      max_unavailable = 1
+      max_unavailable   = 1
     }
 
     remote_access {
-        ec2_ssh_key = var.ec2_ssh_key
-        source_security_group_ids = var.remote_access_sg_ids
+        ec2_ssh_key                 = var.ec2_ssh_key
+        source_security_group_ids   = aws_security_group.remote_access_sg.*.id
     }
 }
 

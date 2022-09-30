@@ -9,18 +9,13 @@ variable "node_role_arn" {
     type = string
 }
 
+variable "vpc_id" {
+    description = "Physical ID of the VPC into which the cluster will deploy"
+    type = string
+}
+
 variable "subnet_ids"{
     description = "List of subnet IDs into which to cluster pods"
-    type = list
-}
-
-variable "control_plane_sg_ids" {
-    description = "List of security group IDs into which the control plane deploys"
-    type = list 
-}
-
-variable "remote_access_sg_ids" {
-    description = "List of security group IDs which are allowed ingress into the cluster"
     type = list
 }
 
@@ -31,5 +26,9 @@ variable "ec2_ssh_key" {
     type = string
 }
 
+variable "source_ips" {
+    description = "IPs to whitelist for remote SSH access to pods"
+    type = list
+}
 # defaultable
 
