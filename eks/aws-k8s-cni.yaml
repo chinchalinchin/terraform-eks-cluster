@@ -1,3 +1,5 @@
+# SEE: https://github.com/aws/amazon-vpc-cni-k8s
+
 ---
 # Source: aws-vpc-cni/templates/serviceaccount.yaml
 apiVersion: v1
