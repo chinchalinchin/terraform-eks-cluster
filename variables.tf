@@ -11,6 +11,11 @@ variable "node_role_arn" {
     type = string
 }
 
+variable "bastion_role_arn" {
+    description = "IAM role arn for the EC2 bastion host instance profile"
+    type = string
+}
+
 variable "vpc_id" {
     description = "Physical ID of the VPC into which the cluster will deploy"
     type = string
@@ -27,7 +32,7 @@ variable "private_subnet_ids" {
 }
 
 variable "source_ips" {
-    description = "IPs to whitelist for remote SSH access to pods"
+    description = "IPs to whitelist for remote SSH access to pods and ingress into the bastion host"
     type = list
 }
 

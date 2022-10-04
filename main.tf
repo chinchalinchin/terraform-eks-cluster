@@ -68,13 +68,18 @@ resource "aws_instance" "automation_library_bastion_host" {
     #       use this to generate key-pair instead of doing it manually and passing in the keyname.
     key_name                                            = var.ec2_ssh_key
     instance_type                                       = "t3.nano"
-    vpc_security_group_ids                             = [
+    vpc_security_group_ids                              = [
                                                             aws_security_group.remote_access_sg.id
                                                         ]
     subnet_id                                           = var.public_subnet_ids[0]
     tags                                                = {
                                                             Name = "al-cluster-host"
                                                         }
+}
+
+resource "aws_instance_profile" "automation_library_bastion_profile" {
+    name                                                = "automation-library-bastion-instance-profile"
+    role_arn                                            = var.bastion_role_arn
 }
 
 resource "aws_eks_cluster" "automation_library_cluster" {
