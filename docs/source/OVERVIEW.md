@@ -10,6 +10,8 @@ A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** manag
 ### Repositories
 - [aws/amazon-vpc-cni-k8s](https://github.com/aws/amazon-vpc-cni-k8s)
 - [kubernetes-sigs/external-dns](https://github.com/kubernetes-sigs/external-dns)
+### AWS EC2 Documentation
+- [Accessing Linux Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
 ### AWS EKS Documentation
 - [Security Best Practices](https://aws.github.io/aws-eks-best-practices/security/docs/)
 - [Security Group Considerations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)

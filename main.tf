@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "control_plane_ingress" {
     from_port                                           = 0
     to_port                                             = 0
     protocol                                            = "-1"
-    security_group_id                                   = aws_eks_cluster.automation_library_cluster.cluster_security_group_id
+    security_group_id                                   = aws_eks_cluster.automation_library_cluster.vpc_config[0].cluster_security_group_id
     source_security_group_id                            = aws_security_group.remote_access_sg.id
 }
 
@@ -42,7 +42,9 @@ resource "aws_security_group_rule" "remote_access_ingress" {
     protocol                                            = "-1"
     cidr_blocks                                         = concat(
                                                             var.source_ips,
-                                                            data.aws_vpc.cluster_vpc.cidr_block
+                                                            [
+                                                                data.aws_vpc.cluster_vpc.cidr_block
+                                                            ]
                                                         )
     security_group_id                                   = aws_security_group.remote_access_sg.id
 } 
@@ -53,7 +55,9 @@ resource "aws_security_group_rule" "remote_access_egress" {
     from_port                                           = 0
     to_port                                             = 0
     protocol                                            = "-1"
-    cidr_blocks                                         = "0.0.0.0/0"
+    cidr_blocks                                         = [
+                                                            "0.0.0.0/0"
+                                                        ]
     security_group_id                                   = aws_security_group.remote_access_sg.id
 }
 
@@ -64,8 +68,8 @@ resource "aws_instance" "automation_library_bastion_host" {
     #       use this to generate key-pair instead of doing it manually and passing in the keyname.
     key_name                                            = var.ec2_ssh_key
     instance_type                                       = "t3.nano"
-    vpc_security_groups_ids                             = [
-                                                            aws_security_group.remote_access_ingress.id
+    vpc_security_group_ids                             = [
+                                                            aws_security_group.remote_access_sg.id
                                                         ]
     subnet_id                                           = var.public_subnet_ids[0]
 }
@@ -132,6 +136,18 @@ resource "aws_eks_node_group" "automation-library-ng" {
 
 output "endpoint" {
     value                                               = aws_eks_cluster.automation_library_cluster.endpoint
+}
+
+output "cluster-sg" {
+    value                                               = aws_eks_cluster.automation_library_cluster.vpc_config[0].cluster_security_group_id
+}
+
+output "bastion-ip" {
+    value                                               = aws_instance.automation_library_bastion_host.public_ip
+}
+
+output "bastion-dns"{
+    value                                               = aws_instance.automation_library_bastion_host.public_dns
 }
 
 output "kubeconfig-certificate-authority-data" {
