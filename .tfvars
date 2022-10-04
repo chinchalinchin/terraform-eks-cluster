@@ -5,9 +5,13 @@
 cluster_role_arn = "arn:aws:iam::<account_id>:role/<role_name>"
 node_role_arn = "arn:aws:iam::<account_id>:role/<role_name>"
 vpc_id="vpc-xxxxx"
-subnet_ids = [
+public_subnet_ids = [
     "subnet-xxxxx", 
     "subnet-xxxxx"
+]
+private_subnet_ids = [
+    "subnet-xxxx",
+    "subnet-xxxx"
 ]
 source_ips = [
     "x.x.x.x/xx", 

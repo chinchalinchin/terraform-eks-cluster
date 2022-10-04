@@ -1,3 +1,7 @@
+data "aws_vpc" "cluster_vpc" {
+  id = var.vpc_id
+}
+
 resource "aws_kms_key" "automation_library_key" {
     description             = "KMS key for encrypting cluster secrets"
     deletion_window_in_days = 10
@@ -8,7 +12,7 @@ resource "aws_kms_key" "automation_library_key" {
 }
 
 resource "aws_security_group" "control_plane_sg" {
-    name        = "control-plane-sg"
+    name        = "al-cluster-control-plane-sg"
     description = "Allow TLS inbound traffic"
     vpc_id      = var.vpc_id
 
@@ -17,6 +21,12 @@ resource "aws_security_group" "control_plane_sg" {
         team            = "BrightLabs"
         name            = "control_plane"
     }
+}
+
+resource "aws_security_group" "remote_access_sg" {
+    name = "al-cluster-remote-access-sg"
+    description = "Allow bastion host to communicate with all subnets"
+    vpc_id = var.vpc_id
 }
 
 resource "aws_security_group_rule" "control_plane_ingress" {
@@ -40,25 +50,31 @@ resource "aws_security_group_rule" "control_plane_egress" {
 }
 
 
-resource "aws_security_group" "remote_access_sg" {
-    name        = "remote-access-sg"
-    description = "Restrict remote access to IP whitelist"
-    vpc_id      = var.vpc_id
-
-    ingress {
-        description      = "VPC Remote Access"
-        from_port        = 0
-        to_port          = 0
-        protocol         = "-1"
-        cidr_blocks      = var.source_ips
-    }
-
-    tags = {
-        oganization     = "AutomationLibrary"
-        team            = "BrightLabs"
-        name            = "ssh"
-    }
+resource "aws_security_group_rule" "remote_access_ingress" {
+    description         = "Restrict remote access to IP whitelist and VPC CIDR block"
+    type                = "ingress"
+    from_port           = 0
+    to_port             = 0
+    protocol            = "-1"
+    cidr_blocks         = concat(
+        var.source_ips,
+        data.aws_vpc.cluster_vpc.cidr_block
+    )
+    security_group_id   = aws_security_group.remote_access_sg.id
 } 
+
+
+resource "aws_instance" "automation_library_bastion_host" {
+    # ubuntu 16
+    ami = var.bastion_ami
+    associate_public_ip_address = true
+    key_name = var.ec2_ssh_key
+    instance_type = "t3.nano"
+    security_groups = [
+        aws_security_group.remote_access_ingress.id
+    ]
+    subnet_id = var.public_subnet_ids[0]
+}
 
 resource "aws_eks_cluster" "automation_library_cluster" {
     name                        = "automation-library-cluster"
@@ -84,10 +100,12 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
     vpc_config {
-        subnet_ids              = var.subnet_ids
+        subnet_ids              = concat(
+            var.public_subnet_ids,
+            var.private_subnet_ids
+        )
         security_group_ids      = [
             aws_security_group.control_plane_sg.id,
-            aws_security_group.remote_access_sg.id
         ]
         endpoint_private_access = true
         endpoint_public_access  = false
@@ -103,7 +121,7 @@ resource "aws_eks_node_group" "automation-library-ng" {
     ]
     node_group_name     = "automation-library-node-group-${count.index}"
     node_role_arn       = var.node_role_arn
-    subnet_ids          = var.subnet_ids
+    subnet_ids          = var.private_subnet_ids
 
     scaling_config {
       desired_size      = 2

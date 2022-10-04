@@ -17,6 +17,7 @@ A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** manag
 - [Deploying a Sample Application](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
 - [Proposal: CNI Plugin For Kubernetes networking over AWS VPC](https://github.com/aws/amazon-vpc-cni-k8s)
 - [VPC Considerations](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
+- [Cluster Endpoint Access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html)
 ### eksctl Documentation
 - [Introduction](https://eksctl.io/introduction/)
 - [eksctl Config Samples](https://github.com/weaveworks/eksctl/tree/main/examples)
@@ -37,6 +38,7 @@ A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** manag
 ### Terraform Documentation
 - [EKS Cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 - [EKS Node Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
+- [Key Pair](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair)
 - [KMS Key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)
 - [Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
 - [Security Group Rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)

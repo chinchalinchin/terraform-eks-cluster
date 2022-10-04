@@ -16,8 +16,13 @@ variable "vpc_id" {
     type = string
 }
 
-variable "subnet_ids"{
-    description = "List of subnet IDs into which to cluster pods"
+variable "public_subnet_ids"{
+    description = "List of public subnet IDs into which the cluster will deploy"
+    type = list
+}
+
+variable "private_subnet_ids" {
+    description = "List of private subnet IDs into which the cluster will deploy"
     type = list
 }
 
@@ -43,4 +48,11 @@ variable "instance_type" {
     description = "Node instance type. Default is recommened by GitLab documentation. See: https://docs.gitlab.com/charts/installation/cloud/eks.html#scripted-cluster-creation"
     type = string
     default = "m5.xlarge"
+}
+
+variable "bastion_ami" {
+    description = "AMI image to use for the bastion host. Defaults to us-east-1 Ubuntu 16.04. See the following to find the image in your region: https://cloud-images.ubuntu.com/locator/ec2/"
+    # Ubuntu 16, us-east-1
+    type = string
+    default = "ami-0b0ea68c435eb488d"
 }
