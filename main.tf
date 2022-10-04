@@ -25,8 +25,8 @@ resource "aws_security_group_rule" "control_plane_ingress" {
     from_port                 = 0
     to_port                   = 0
     protocol                  = "-1"
-    security_group_id         = aws_security_group.remote_access_sg.id
-    source_security_group_id  = aws_security_group.remote_access_sg.id
+    security_group_id         = aws_security_group.control_plane_sg.id
+    source_security_group_id  = aws_security_group.control_plane_sg.id
 }
 
 resource "aws_security_group_rule" "control_plane_egress" {
@@ -36,20 +36,20 @@ resource "aws_security_group_rule" "control_plane_egress" {
     to_port                 = 0
     protocol                = "-1"
     cidr_blocks             = ["0.0.0.0/0"]
-    security_group_id         = aws_security_group.remote_access_sg.id
+    security_group_id         = aws_security_group.control_plane_sg.id
 }
 
 
 resource "aws_security_group" "remote_access_sg" {
     name        = "remote-access-sg"
-    description = "Allow inbound SSH traffic"
+    description = "Restrict remote access to IP whitelist"
     vpc_id      = var.vpc_id
 
     ingress {
-        description      = "VPC SSH Ingress"
-        from_port        = 22
-        to_port          = 22
-        protocol         = "tcp"
+        description      = "VPC Remote Access"
+        from_port        = 0
+        to_port          = 0
+        protocol         = "-1"
         cidr_blocks      = var.source_ips
     }
 
@@ -85,25 +85,29 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 
     vpc_config {
         subnet_ids              = var.subnet_ids
-        security_group_ids      = [aws_security_group.control_plane_sg.id]
+        security_group_ids      = [
+            aws_security_group.control_plane_sg.id,
+            aws_security_group.remote_access_sg.id
+        ]
         endpoint_private_access = true
         endpoint_public_access  = false
     }
 
 }
 
-resource "aws_eks_node_group" "automation-library-ng1" {
+resource "aws_eks_node_group" "automation-library-ng" {
+    count = var.node_count
     cluster_name        = aws_eks_cluster.automation_library_cluster.name
     instance_types      = [
-        "t3.medium"
+        var.instance_type
     ]
-    node_group_name     = "automation-library-node-group-1"
+    node_group_name     = "automation-library-node-group-${count.index}"
     node_role_arn       = var.node_role_arn
     subnet_ids          = var.subnet_ids
 
     scaling_config {
-      desired_size      = 1
-      max_size          = 2
+      desired_size      = 2
+      max_size          = 3
       min_size          = 1
     }
 
@@ -113,7 +117,9 @@ resource "aws_eks_node_group" "automation-library-ng1" {
 
     remote_access {
         ec2_ssh_key                 = var.ec2_ssh_key
-        source_security_group_ids   = [aws_security_group.remote_access_sg.id]
+        source_security_group_ids   = [
+            aws_security_group.remote_access_sg.id
+        ]
     }
 }
 

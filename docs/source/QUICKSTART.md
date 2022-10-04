@@ -2,6 +2,11 @@
 
 ## Local Setup
 
+### Requirements
+- [kubectl]()
+- [awscli]()
+- [helm]()
+  
 ### Environment Variables
 
 Copy _.sample.env_ into a new _.env_ environment variable, adjust the variables and then load it into your shell session,
@@ -37,5 +42,43 @@ aws ec2 import-key-pair \
     --public-key-material fileb://~/.ssh/al_cluster_key.pub
 ```
 
-Take note of this key-name. It is used an input into the **Terraform** module.
+Take note of this key-name. It is used as an input into the **Terraform** module.
 
+## AWS Setup
+
+### Cluster Role
+
+The **EKS** cluster needs a service role to assume, 
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+[See AWS EKS Cluster Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
+
+### Node Role
+
+Nodes need an IAM role with the following managed policies attached: `AmazonEKSWorkerNodePolicy`, `AmazonEC2ContainerRegistryReadOnly`, `AmazonEKS_CNI_Policy`. 
+
+[See AWS EKS Node Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html)
+
+### Kube Config
+
+After **Terraform** has deployed the **EKS** cluster, update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
+
+```shell
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name automation-library-cluster
+```

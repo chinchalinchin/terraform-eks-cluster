@@ -2,45 +2,6 @@
 
 A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** managed nodes.
 
-## IAM Roles
-
-### Cluster Role
-
-The service role for **EKS** already exists in **NorthernLights** under the name, `AWSRoleForEKS`,
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "eks.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-```
-
-[See AWS EKS Cluster Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
-
-### Node Role
-
-Nodes need an IAM with the following managed policies attached: `AmazonEKSWorkerNodePolicy`, `AmazonEC2ContainerRegistryReadOnly`, `AmazonEKS_CNI_Policy`. 
-
-[See AWS EKS Node Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html)
-
-### Kube Config
-
-Update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
-
-```shell
-aws eks update-kubeconfig \
-  --region us-east-1 \
-  --name automation-library-cluster
-```
-
 <!-- BEGIN_TF_DOCS -->
   Placeholder for Terraform Docs
 <!-- END_TF_DOCS -->
@@ -48,6 +9,7 @@ aws eks update-kubeconfig \
 ## References
 ### Repositories
 - [aws/amazon-vpc-cni-k8s](https://github.com/aws/amazon-vpc-cni-k8s)
+- [kubernetes-sigs/external-dns](https://github.com/kubernetes-sigs/external-dns)
 ### AWS EKS Documentation
 - [Security Best Practices](https://aws.github.io/aws-eks-best-practices/security/docs/)
 - [Security Group Considerations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
@@ -58,12 +20,20 @@ aws eks update-kubeconfig \
 ### eksctl Documentation
 - [Introduction](https://eksctl.io/introduction/)
 - [eksctl Config Samples](https://github.com/weaveworks/eksctl/tree/main/examples)
+### ExternalDNS Documentation
+- [ExternalDNS for AWS](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
 ### Gitlab Documentation
 - [Docker Image](https://docs.gitlab.com/ee/install/docker.html)
 - [Helm Chart](https://docs.gitlab.com/charts/)
 - [Test Gitlab on AWS EKS](https://docs.gitlab.com/charts/quickstart/)
+- [AWS EKS Resources](https://docs.gitlab.com/charts/installation/cloud/eks.html)
+- [Global Configuration](https://docs.gitlab.com/charts/charts/globals.html)
+- [AWS Setup](https://docs.gitlab.com/charts/installation/cloud/eks.html)
+- [Use AWS ACM to Manage Certificates](https://docs.gitlab.com/charts/installation/tls.html#use-aws-acm-to-manage-certificates)
+- [Issue: Install Helm Chart Without Domain?](https://gitlab.com/gitlab-org/charts/gitlab/-/issues/3182)
 ### Kubernetes Documentation
-- [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+- [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
+- [Service: SSL Support on AWS](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
 ### Terraform Documentation
 - [EKS Cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 - [EKS Node Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)

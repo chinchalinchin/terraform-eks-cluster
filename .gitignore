@@ -11,3 +11,5 @@
 **/*.lock.info
 **/*.env
 !**/*.sample.env
+
+notes
