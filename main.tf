@@ -3,156 +3,145 @@ data "aws_vpc" "cluster_vpc" {
 }
 
 resource "aws_kms_key" "automation_library_key" {
-    description             = "KMS key for encrypting cluster secrets"
-    deletion_window_in_days = 10
-    enable_key_rotation     = true
-    customer_master_key_spec  = "SYMMETRIC_DEFAULT"
-    key_usage               = "ENCRYPT_DECRYPT"
-    is_enabled              = true
+    description                                         = "KMS key for encrypting cluster secrets"
+    deletion_window_in_days                             = 10
+    enable_key_rotation                                 = true
+    customer_master_key_spec                            = "SYMMETRIC_DEFAULT"
+    key_usage                                           = "ENCRYPT_DECRYPT"
+    is_enabled                                          = true
 }
 
-resource "aws_security_group" "control_plane_sg" {
-    name        = "al-cluster-control-plane-sg"
-    description = "Allow TLS inbound traffic"
-    vpc_id      = var.vpc_id
-
-    tags = {
-        organization    = "AutomationLibrary"
-        team            = "BrightLabs"
-        name            = "control_plane"
-    }
-}
 
 resource "aws_security_group" "remote_access_sg" {
-    name = "al-cluster-remote-access-sg"
-    description = "Allow bastion host to communicate with all subnets"
-    vpc_id = var.vpc_id
+    name                                                = "al-cluster-remote-access-sg"
+    description                                         = "Bastion host security group"
+    vpc_id                                              = var.vpc_id
+    tags                                                = {
+                                                        organization    = "AutomationLibrary"
+                                                        team            = "BrightLabs"
+                                                        service         = "eks"
+                                                    }
 }
 
 resource "aws_security_group_rule" "control_plane_ingress" {
-    description               = "Restrict incoming traffic to the security group itself."
-    type                      = "ingress"
-    from_port                 = 0
-    to_port                   = 0
-    protocol                  = "-1"
-    security_group_id         = aws_security_group.control_plane_sg.id
-    source_security_group_id  = aws_security_group.control_plane_sg.id
-}
-
-resource "aws_security_group_rule" "control_plane_egress" {
-    description             = "Allow all external traffic, regardless of destination."
-    type                    = "egress"
-    from_port               = 0
-    to_port                 = 0
-    protocol                = "-1"
-    cidr_blocks             = ["0.0.0.0/0"]
-    security_group_id         = aws_security_group.control_plane_sg.id
+    description                                         = "Allow incoming traffic from al-cluster-remote-access-sg to access cluster."
+    type                                                = "ingress"
+    from_port                                           = 0
+    to_port                                             = 0
+    protocol                                            = "-1"
+    security_group_id                                   = aws_eks_cluster.automation_library_cluster.cluster_security_group_id
+    source_security_group_id                            = aws_security_group.remote_access_sg.id
 }
 
 
 resource "aws_security_group_rule" "remote_access_ingress" {
-    description         = "Restrict remote access to IP whitelist and VPC CIDR block"
-    type                = "ingress"
-    from_port           = 0
-    to_port             = 0
-    protocol            = "-1"
-    cidr_blocks         = concat(
-        var.source_ips,
-        data.aws_vpc.cluster_vpc.cidr_block
-    )
-    security_group_id   = aws_security_group.remote_access_sg.id
+    description                                         = "Restrict remote access to IP whitelist and VPC CIDR block"
+    type                                                = "ingress"
+    from_port                                           = 0
+    to_port                                             = 0
+    protocol                                            = "-1"
+    cidr_blocks                                         = concat(
+                                                            var.source_ips,
+                                                            data.aws_vpc.cluster_vpc.cidr_block
+                                                        )
+    security_group_id                                   = aws_security_group.remote_access_sg.id
 } 
 
+resource "aws_security_group_rule" "remote_access_egress" {
+    description                                         = "Allow outgoing traffic"
+    type                                                = "egress"
+    from_port                                           = 0
+    to_port                                             = 0
+    protocol                                            = "-1"
+    cidr_blocks                                         = "0.0.0.0/0"
+    security_group_id                                   = aws_security_group.remote_access_sg.id
+}
 
 resource "aws_instance" "automation_library_bastion_host" {
-    # ubuntu 16
-    ami = var.bastion_ami
-    associate_public_ip_address = true
-    key_name = var.ec2_ssh_key
-    instance_type = "t3.nano"
-    security_groups = [
-        aws_security_group.remote_access_ingress.id
-    ]
-    subnet_id = var.public_subnet_ids[0]
+    ami                                                 = var.bastion_ami
+    associate_public_ip_address                         = true
+    # TODO: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
+    #       use this to generate key-pair instead of doing it manually and passing in the keyname.
+    key_name                                            = var.ec2_ssh_key
+    instance_type                                       = "t3.nano"
+    vpc_security_groups_ids                             = [
+                                                            aws_security_group.remote_access_ingress.id
+                                                        ]
+    subnet_id                                           = var.public_subnet_ids[0]
 }
 
 resource "aws_eks_cluster" "automation_library_cluster" {
-    name                        = "automation-library-cluster"
-    
-    role_arn                    = var.cluster_role_arn
-
-    enabled_cluster_log_types   = [
-        "api", 
-        "audit", 
-        "authenticator", 
-        "controllerManager", 
-        "scheduler"
-    ]
+    name                                                = "automation-library-cluster"
+    role_arn                                            = var.cluster_role_arn
+    enabled_cluster_log_types                           = [
+                                                            "api", 
+                                                            "audit", 
+                                                            "authenticator", 
+                                                            "controllerManager", 
+                                                            "scheduler"
+                                                        ]
 
     encryption_config {
-        resources   = [
-            "secrets"
-        ]
+        resources                                       = [
+                                                            "secrets"
+                                                        ]
 
         provider {
-            key_arn = aws_kms_key.automation_library_key.arn
+            key_arn                                     = aws_kms_key.automation_library_key.arn
         }
     }
 
     vpc_config {
-        subnet_ids              = concat(
-            var.public_subnet_ids,
-            var.private_subnet_ids
-        )
-        security_group_ids      = [
-            aws_security_group.control_plane_sg.id,
-        ]
-        endpoint_private_access = true
-        endpoint_public_access  = false
+        subnet_ids                                      = concat(
+                                                            var.public_subnet_ids,
+                                                            var.private_subnet_ids
+                                                        )
+        endpoint_private_access                         = true
+        endpoint_public_access                          = false
     }
 
 }
 
 resource "aws_eks_node_group" "automation-library-ng" {
     count = var.node_count
-    cluster_name        = aws_eks_cluster.automation_library_cluster.name
-    instance_types      = [
-        var.instance_type
-    ]
-    node_group_name     = "automation-library-node-group-${count.index}"
-    node_role_arn       = var.node_role_arn
-    subnet_ids          = var.private_subnet_ids
+    cluster_name                                        = aws_eks_cluster.automation_library_cluster.name
+    instance_types                                      = [
+                                                            var.instance_type
+                                                        ]
+    node_group_name                                     = "automation-library-node-group-${count.index}"
+    node_role_arn                                       = var.node_role_arn
+    subnet_ids                                          = var.private_subnet_ids
 
     scaling_config {
-      desired_size      = 2
-      max_size          = 3
-      min_size          = 1
+      desired_size                                      = 2
+      max_size                                          = 3
+      min_size                                          = 1
     }
 
     update_config {
-      max_unavailable   = 1
+      max_unavailable                                   = 1
     }
 
     remote_access {
-        ec2_ssh_key                 = var.ec2_ssh_key
-        source_security_group_ids   = [
-            aws_security_group.remote_access_sg.id
-        ]
+        ec2_ssh_key                                     = var.ec2_ssh_key
+        source_security_group_ids                       = [
+                                                            aws_security_group.remote_access_sg.id
+                                                        ]
     }
 }
 
 output "endpoint" {
-    value = aws_eks_cluster.automation_library_cluster.endpoint
+    value                                               = aws_eks_cluster.automation_library_cluster.endpoint
 }
 
 output "kubeconfig-certificate-authority-data" {
-    value = aws_eks_cluster.automation_library_cluster.certificate_authority[0].data
+    value                                               = aws_eks_cluster.automation_library_cluster.certificate_authority[0].data
 }
 
 output "kms-key-arn" {
-    value = aws_kms_key.automation_library_key.arn
+    value                                               = aws_kms_key.automation_library_key.arn
 }
 
 output "kms-key-id" {
-    value = aws_kms_key.automation_library_key.id
+    value                                               = aws_kms_key.automation_library_key.id
 }
