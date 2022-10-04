@@ -17,9 +17,9 @@ resource "aws_security_group" "remote_access_sg" {
     description                                         = "Bastion host security group"
     vpc_id                                              = var.vpc_id
     tags                                                = {
-                                                            organization    = "AutomationLibrary"
-                                                            team            = "BrightLabs"
-                                                            service         = "eks"
+                                                            Organization    = "AutomationLibrary"
+                                                            Team            = "BrightLabs"
+                                                            Service         = "eks"
                                                         }
 }
 
@@ -73,7 +73,7 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                         ]
     subnet_id                                           = var.public_subnet_ids[0]
     tags                                                = {
-                                                            name = "al-cluster-host"
+                                                            Name = "al-cluster-host"
                                                         }
 }
 
