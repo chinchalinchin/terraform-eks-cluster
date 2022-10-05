@@ -3,9 +3,13 @@
 ## Local Setup
 
 ### Requirements
-- [kubectl]()
-- [awscli]()
-- [helm]()
+
+You will need to install the following software to deploy and manage the **EKS** cluster and its associated components from your local machine.
+
+- [awscli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [helm](https://helm.sh/docs/intro/install/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
   
 ### Environment Variables
 
