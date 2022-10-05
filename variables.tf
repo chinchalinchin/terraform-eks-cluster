@@ -37,7 +37,7 @@ variable "node_role_name" {
 variable "bastion_role_name" {
     description = "IAM role name for the EC2 bastion host instance profile"
     type = string
-    default = "AWSRoleForEKS"
+    default = "AWSRoleforEC2"
 }
 
 variable "ec2_ssh_key" {

@@ -40,6 +40,8 @@ A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** manag
 ### Terraform Documentation
 - [EKS Cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 - [EKS Node Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
+- [EC2 Instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance)
+- [Instance Profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile)
 - [Key Pair](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair)
 - [KMS Key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)
 - [Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
