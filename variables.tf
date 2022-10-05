@@ -1,21 +1,6 @@
-### Credential, role and address variables
-#### These variables must be passed in through environment variables!
+#### Non-defaultable variables
+#### NOTE: These variables must be passed in through environment variables!
 ####    Do not commit their values to version control!
-variable "cluster_role_arn" {
-    description = "IAM role arn for EKS cluster"
-    type = string
-}
-
-variable "node_role_arn" {
-    description = "IAM role arn for EKS Node Group"
-    type = string
-}
-
-variable "bastion_role_name" {
-    description = "IAM role name for the EC2 bastion host instance profile"
-    type = string
-}
-
 variable "vpc_id" {
     description = "Physical ID of the VPC into which the cluster will deploy"
     type = string
@@ -37,6 +22,24 @@ variable "source_ips" {
 }
 
 #### Defaultable variables
+variable "cluster_role_name" {
+    description = "IAM role name for EKS cluster"
+    type = string
+    default = "AWSRoleForEKS"
+}
+
+variable "node_role_name" {
+    description = "IAM role name for EKS Node Group"
+    type = string
+    default = "AmazonEKSNodeRole"
+}
+
+variable "bastion_role_name" {
+    description = "IAM role name for the EC2 bastion host instance profile"
+    type = string
+    default = "AWSRoleForEKS"
+}
+
 variable "ec2_ssh_key" {
     description = "Name of the public SSH key in the EC2 keyring. NOTE: this key must exist in the keyring before launching this Terraform moduel. Refer to QUICKSTART documentation for more information."
     type = string

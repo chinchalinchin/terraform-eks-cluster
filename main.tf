@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_vpc" "cluster_vpc" {
   id = var.vpc_id
 }
@@ -87,7 +89,7 @@ resource "aws_iam_instance_profile" "automation_library_bastion_profile" {
 
 resource "aws_eks_cluster" "automation_library_cluster" {
     name                                                = "automation-library-cluster"
-    role_arn                                            = var.cluster_role_arn
+    role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_role_name}"
     enabled_cluster_log_types                           = [
                                                             "api", 
                                                             "audit", 
@@ -124,7 +126,7 @@ resource "aws_eks_node_group" "automation-library-ng" {
                                                             var.instance_type
                                                         ]
     node_group_name                                     = "automation-library-node-group-${count.index}"
-    node_role_arn                                       = var.node_role_arn
+    node_role_arn                                       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.node_role_name}"
     subnet_ids                                          = var.private_subnet_ids
 
     scaling_config {
