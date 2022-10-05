@@ -48,15 +48,19 @@ Take note of this key-name. It is used as an input into the **Terraform** module
 
 ### SSH into EC2 Bastion Host
 
-After the module has been deployed, you may initiate a connection with the bastion host with the following command,
+After the module has been deployed, one of its outputs, `bastion-dns`, can be used to initiate a connection with the bastion host with the following command,
 
 ```shell
-ssh -i 
+ssh \
+  -i ~/.ssh/al_cluster_key \
+  ubuntu@<bastion-dns-goeshere>
 ```
 
-**NOTE**: By default, the instance uses an Ubuntu 16 AMI, so the default user name is _ubuntu_
+**NOTE**: By default, the instance uses an Ubuntu 16 AMI, so the default user name is _ubuntu_. If you use a different AMI, you may have a different username. See [default usernames](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html#ami-default-user-names) for more information.
 
 ## AWS Setup
+
+Before deploying the **Terraform** module, several roles must exist within the given **AWS** account.
 
 ### Cluster Role
 
@@ -77,13 +81,27 @@ The **EKS** cluster needs a service role to assume,
 }
 ```
 
+The name of this role is passed in through the `cluster_role_name` variable.
+
 [See AWS EKS Cluster Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
 
 ### Node Role
 
 Nodes need an IAM role with the following managed policies attached: `AmazonEKSWorkerNodePolicy`, `AmazonEC2ContainerRegistryReadOnly`, `AmazonEKS_CNI_Policy`. 
 
+The name of this role is passed in through the `node_role_name` variable.
+
 [See AWS EKS Node Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html)
+
+### EC2 Instance Profile
+
+The **EC2** bastion host will need an instance profile provisioned and a role attached to it that permits `eks:*` and `ec2:*`
+
+The name of this role is passed in through the `bastion_role_name` variable.
+
+[See AWS EC2 Instance Profile docs for more information](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html)
+
+**TODO**: Still experimenting with the exact permissions these profile will need. 
 
 ### Kube Config
 
