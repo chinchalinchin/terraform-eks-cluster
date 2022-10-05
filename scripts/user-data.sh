@@ -9,6 +9,7 @@ apt-get install -y \
     apt-transport-https
     ca-certificates \
     curl \
+    unzip
 
 ## EXTRA PACKAGE MANAGER INSTALLATIONS
 ### KUBERNETES
@@ -31,11 +32,11 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.
 apt-get update -y
 apt-get install -y \
     kubectl \
-    heml
+    helm
 
 ## SOURCE INSTALLATIONS
 ### AWS CLI
-"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
 
