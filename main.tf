@@ -72,6 +72,7 @@ resource "aws_instance" "automation_library_bastion_host" {
     # TODO: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
     #       use this to generate key-pair instead of doing it manually and passing in the keyname.
     key_name                                            = var.ec2_ssh_key
+    iam_instance_profile                                = var.bastion_profile_name
     instance_type                                       = "t3.nano"
     vpc_security_group_ids                              = [
                                                             aws_security_group.remote_access_sg.id
@@ -83,12 +84,6 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                             Organization = "AutomationLibrary"
                                                             Service = "ec2"
                                                         }
-}
-
-
-resource "aws_iam_instance_profile" "automation_library_bastion_profile" {
-    name                                                = "automation-library-bastion-instance-profile"
-    role                                                = var.bastion_role_name
 }
 
 

@@ -34,7 +34,7 @@ variable "node_role_name" {
     default = "AmazonEKSNodeRole"
 }
 
-variable "bastion_role_name" {
+variable "bastion_profile_name" {
     description = "IAM role name for the EC2 bastion host instance profile"
     type = string
     default = "AWSRoleforEC2"
