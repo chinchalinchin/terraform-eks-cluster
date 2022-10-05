@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 data "aws_vpc" "cluster_vpc" {
-  id = var.vpc_id
+    id                                                  = var.vpc_id
 }
 
 resource "aws_kms_key" "automation_library_key" {
@@ -24,6 +24,7 @@ resource "aws_security_group" "remote_access_sg" {
                                                             Service         = "eks"
                                                         }
 }
+
 
 resource "aws_security_group_rule" "control_plane_ingress" {
     description                                         = "Allow incoming traffic from al-cluster-remote-access-sg to access cluster."
@@ -51,6 +52,7 @@ resource "aws_security_group_rule" "remote_access_ingress" {
     security_group_id                                   = aws_security_group.remote_access_sg.id
 } 
 
+
 resource "aws_security_group_rule" "remote_access_egress" {
     description                                         = "Allow outgoing traffic"
     type                                                = "egress"
@@ -62,6 +64,7 @@ resource "aws_security_group_rule" "remote_access_egress" {
                                                         ]
     security_group_id                                   = aws_security_group.remote_access_sg.id
 }
+
 
 resource "aws_instance" "automation_library_bastion_host" {
     ami                                                 = var.bastion_ami
@@ -82,10 +85,12 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                         }
 }
 
+
 resource "aws_iam_instance_profile" "automation_library_bastion_profile" {
     name                                                = "automation-library-bastion-instance-profile"
     role                                                = var.bastion_role_name
 }
+
 
 resource "aws_eks_cluster" "automation_library_cluster" {
     name                                                = "automation-library-cluster"
@@ -119,6 +124,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 
 }
 
+
 resource "aws_eks_node_group" "automation-library-ng" {
     count                                               = var.node_count
     cluster_name                                        = aws_eks_cluster.automation_library_cluster.name
@@ -147,29 +153,36 @@ resource "aws_eks_node_group" "automation-library-ng" {
     }
 }
 
+
 output "endpoint" {
     value                                               = aws_eks_cluster.automation_library_cluster.endpoint
 }
+
 
 output "cluster-sg" {
     value                                               = aws_eks_cluster.automation_library_cluster.vpc_config[0].cluster_security_group_id
 }
 
+
 output "bastion-ip" {
     value                                               = aws_instance.automation_library_bastion_host.public_ip
 }
+
 
 output "bastion-dns"{
     value                                               = aws_instance.automation_library_bastion_host.public_dns
 }
 
+
 output "kubeconfig-certificate-authority-data" {
     value                                               = aws_eks_cluster.automation_library_cluster.certificate_authority[0].data
 }
 
+
 output "kms-key-arn" {
     value                                               = aws_kms_key.automation_library_key.arn
 }
+
 
 output "kms-key-id" {
     value                                               = aws_kms_key.automation_library_key.id
