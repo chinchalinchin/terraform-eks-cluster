@@ -74,12 +74,15 @@ resource "aws_instance" "automation_library_bastion_host" {
     subnet_id                                           = var.public_subnet_ids[0]
     tags                                                = {
                                                             Name = "al-cluster-host"
+                                                            Team = "BrightLabs"
+                                                            Organization = "AutomationLibrary"
+                                                            Service = "ec2"
                                                         }
 }
 
-resource "aws_instance_profile" "automation_library_bastion_profile" {
+resource "aws_iam_instance_profile" "automation_library_bastion_profile" {
     name                                                = "automation-library-bastion-instance-profile"
-    role_arn                                            = var.bastion_role_arn
+    role                                                = var.bastion_role_name
 }
 
 resource "aws_eks_cluster" "automation_library_cluster" {
@@ -115,7 +118,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 }
 
 resource "aws_eks_node_group" "automation-library-ng" {
-    count = var.node_count
+    count                                               = var.node_count
     cluster_name                                        = aws_eks_cluster.automation_library_cluster.name
     instance_types                                      = [
                                                             var.instance_type

@@ -21,9 +21,11 @@ These values are passed into **Terraform** through the [TF_VAR syntax](https://w
 
 ## Remote Access
 
+The **EKS** cluster is deployed into private subnets within the VPC, therefore it is not publicly accessible. A **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running; The instance has a role attached to it through its [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) that allows it to make authenticated API calls to the cluster, allowing commands like `kubectl` and `helm` to be run against the cluster. In order to do so, you will need to remote into the aforementioned **EC2** bastion host that gets deployed as part of the module. In order to secure access to the **EC2**, the procedures below detail how to setup the key-pair in the **EC2** key ring and then use that key to SSH into it. In addition, this key is used for SSH access to the pods as well. 
+
 ### Generate SSH Key Pair
 
-This key will be used to allow SSH access to the Pods running the cluster. Generate the key locally with the following command,
+Before deploying the **Terraform** module, generate the key locally with the following command,
 
 ```shell
 ssh-keygen \
@@ -43,6 +45,16 @@ aws ec2 import-key-pair \
 ```
 
 Take note of this key-name. It is used as an input into the **Terraform** module.
+
+### SSH into EC2 Bastion Host
+
+After the module has been deployed, you may initiate a connection with the bastion host with the following command,
+
+```shell
+ssh -i 
+```
+
+**NOTE**: By default, the instance uses an Ubuntu 16 AMI, so the default user name is _ubuntu_
 
 ## AWS Setup
 

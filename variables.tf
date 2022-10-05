@@ -11,8 +11,8 @@ variable "node_role_arn" {
     type = string
 }
 
-variable "bastion_role_arn" {
-    description = "IAM role arn for the EC2 bastion host instance profile"
+variable "bastion_role_name" {
+    description = "IAM role name for the EC2 bastion host instance profile"
     type = string
 }
 
@@ -57,7 +57,6 @@ variable "instance_type" {
 
 variable "bastion_ami" {
     description = "AMI image to use for the bastion host. Defaults to us-east-1 Ubuntu 16.04. See the following to find the image in your region: https://cloud-images.ubuntu.com/locator/ec2/"
-    # Ubuntu 16, us-east-1
     type = string
     default = "ami-0b0ea68c435eb488d"
 }
