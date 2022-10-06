@@ -67,6 +67,7 @@ resource "aws_security_group_rule" "remote_access_egress" {
 
 
 resource "aws_instance" "automation_library_bastion_host" {
+    count                                               = var.production ? 1 : 0
     ami                                                 = var.bastion_ami
     associate_public_ip_address                         = true
     # TODO: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
@@ -113,8 +114,14 @@ resource "aws_eks_cluster" "automation_library_cluster" {
                                                             var.public_subnet_ids,
                                                             var.private_subnet_ids
                                                         )
-        endpoint_private_access                         = true
-        endpoint_public_access                          = false
+        public_access_cidrs                             = concat(
+                                                            var.source_ips,
+                                                            [
+                                                                data.aws_vpc.cluster_vpc.cidr_block
+                                                            ]
+                                                        )
+        endpoint_private_access                         = var.production ? true : false
+        endpoint_public_access                          = var.production ? false : true
     }
 
 }

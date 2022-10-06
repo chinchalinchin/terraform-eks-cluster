@@ -22,6 +22,12 @@ variable "source_ips" {
 }
 
 #### Defaultable variables
+variable "production" {
+    description = "Enable production deployment"
+    type = bool
+    default = false
+}
+
 variable "cluster_role_name" {
     description = "IAM role name for EKS cluster"
     type = string
