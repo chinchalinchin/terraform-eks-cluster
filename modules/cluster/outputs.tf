@@ -9,12 +9,12 @@ output "cluster-sg" {
 
 
 output "bastion-ip" {
-    value                                               = aws_instance.automation_library_bastion_host.public_ip
+    value                                               = var.production ? aws_instance.automation_library_bastion_host[0].public_ip : null
 }
 
 
 output "bastion-dns"{
-    value                                               = aws_instance.automation_library_bastion_host.public_dns
+    value                                               = var.production ? aws_instance.automation_library_bastion_host[0].public_dns : null
 }
 
 output "ebs-csi-plugin-arn" {

@@ -62,11 +62,11 @@ resource "aws_security_group_rule" "remote_access_egress" {
 
 resource "aws_instance" "automation_library_bastion_host" {
     count                                               = var.production ? 1 : 0
-    ami                                                 = var.bastion_config.bastion_ami
+    ami                                                 = var.bastion_config.ami
     associate_public_ip_address                         = true
     # TODO: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
     #       use this to generate key-pair instead of doing it manually and passing in the keyname.
-    key_name                                            = var.ec2_ssh_key
+    key_name                                            = var.ssh_key
     iam_instance_profile                                = var.iam_config.bastion_profile_name
     instance_type                                       = "t3.nano"
     vpc_security_group_ids                              = [
@@ -84,7 +84,7 @@ resource "aws_instance" "automation_library_bastion_host" {
 
 resource "aws_eks_cluster" "automation_library_cluster" {
     name                                                = "automation-library-cluster"
-    role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_role_name}"
+    role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.cluster_role_name}"
     enabled_cluster_log_types                           = [
                                                             "api", 
                                                             "audit", 
@@ -149,7 +149,7 @@ resource "aws_eks_node_group" "automation-library-ng" {
     }
 
     remote_access {
-        ec2_ssh_key                                     = var.ec2_ssh_key
+        ec2_ssh_key                                     = var.ssh_key
         source_security_group_ids                       = [
                                                             aws_security_group.remote_access_sg.id
                                                         ]
