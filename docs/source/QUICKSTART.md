@@ -21,11 +21,25 @@ cp ./.sample.env ./.env
 source ./.env
 ```
 
-These values are passed into **Terraform** through the [TF_VAR syntax](https://www.terraform.io/cli/config/environment-variables), rather than the _.tfvars_ file, to avoid committing sensitive information to version control.
+The values prefixed by **TF_VAR_** are passed into **Terraform** through the [TF_VAR syntax](https://www.terraform.io/cli/config/environment-variables), rather than the _.tfvars_ file, to avoid committing sensitive information to version control. The other environment variables in this file are not necessarily to deploy the module, but are useful in administrative activities.
+
+### Kube Config
+
+After **Terraform** has deployed the **EKS** cluster, update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
+
+```shell
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name automation-library-cluster
+```
 
 ## Remote Access
 
-The **EKS** cluster is deployed into private subnets within the VPC, therefore it is not publicly accessible. A **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running; The instance has a role attached to it through its [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) that allows it to make authenticated API calls to the cluster, allowing commands like `kubectl` and `helm` to be run against the cluster. In order to do so, you will need to remote into the aforementioned **EC2** bastion host that gets deployed as part of the module. In order to secure access to the **EC2**, the procedures below detail how to setup the key-pair in the **EC2** key ring and then use that key to SSH into it. In addition, this key is used for SSH access to the pods as well. 
+The **EKS** cluster is deployed into private subnets within the VPC, therefore it is not publicly accessible. A **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running if ther **Terraform** variable `production` is set to `true`; This will allow the cluster admin to SSH access to the cluster. 
+
+The bastion host instance has a role attached to it through its [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) that allows it to make authenticated API calls to the cluster, allowing commands like `kubectl` and `helm` to be run against the cluster. In order to do so, you will need to remote into the aforementioned **EC2** bastion host that gets deployed as part of the module. In order to secure access to the **EC2**, the procedures below detail how to setup the key-pair in the **EC2** key ring and then use that key to SSH into it. In addition, this key is used for SSH access to the pods as well. 
+
+**NOTE**: If `production` is set to `false`, the bastion host is _not_ deployed; instead public access is enabled to the **EKS** kubernetes API. In this case, you must ensure `source_ips` includes any IPs that will need access to the API.
 
 ### Generate SSH Key Pair
 
@@ -52,7 +66,7 @@ Take note of this key-name. It is used as an input into the **Terraform** module
 
 ### SSH into EC2 Bastion Host
 
-After the module has been deployed, one of its outputs, `bastion-dns`, can be used to initiate a connection with the bastion host with the following command,
+Assuming `production` is `true`, after the module has been deployed, one of its outputs, `bastion-dns`, can be used to initiate a connection with the bastion host with the following command,
 
 ```shell
 ssh \
@@ -60,11 +74,11 @@ ssh \
   ubuntu@<bastion-dns-goeshere>
 ```
 
-**NOTE**: By default, the instance uses an Ubuntu 16 AMI, so the default user name is _ubuntu_. If you use a different AMI, you may have a different username. See [default usernames](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html#ami-default-user-names) for more information.
+**NOTE**: By default, the instance uses an **Ubuntu** 16 AMI, so the default user name is _ubuntu_. If you use a different AMI, you may have a different username. See [default usernames](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html#ami-default-user-names) for more information.
 
 ## AWS Setup
 
-Before deploying the **Terraform** module, several roles must exist within the given **AWS** account.
+Before deploying the **Terraform** module, several roles must exist within the given **AWS** account. These role names are ingested through the `vpc_config` variable.
 
 ### Cluster Role
 
@@ -85,34 +99,24 @@ The **EKS** cluster needs a service role to assume,
 }
 ```
 
-The name of this role is passed in through the `cluster_role_name` variable.
-
 [See AWS EKS Cluster Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
 
 ### Node Role
 
-Nodes need an IAM role with the following managed policies attached: `AmazonEKSWorkerNodePolicy`, `AmazonEC2ContainerRegistryReadOnly`, `AmazonEKS_CNI_Policy`. 
-
-The name of this role is passed in through the `node_role_name` variable.
+Nodes need an **IAM** role with the following managed policies attached: `AmazonEKSWorkerNodePolicy`, `AmazonEC2ContainerRegistryReadOnly`, `AmazonEKS_CNI_Policy`. 
 
 [See AWS EKS Node Role docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html)
 
+### EBS Role
+
+The [EBS Container Stroage Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) requires an **IAM** role with the the **AWS** managed policy `AmazonEBSCSIDriverPolicy` attached.
+
+[See AWS EBS CSI docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/csi-iam-role.html)
+
 ### EC2 Instance Profile
 
-The **EC2** bastion host will need an instance profile provisioned and a role attached to it that permits `eks:*` and `ec2:*`
-
-The name of this role is passed in through the `bastion_role_name` variable.
+If deploying with `production = true`, the **EC2** bastion host will need an instance profile provisioned and a role attached to it that permits `eks:*` and `ec2:*`, at minimum.
 
 [See AWS EC2 Instance Profile docs for more information](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html)
 
 **TODO**: Still experimenting with the exact permissions these profile will need. 
-
-### Kube Config
-
-After **Terraform** has deployed the **EKS** cluster, update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
-
-```shell
-aws eks update-kubeconfig \
-  --region us-east-1 \
-  --name automation-library-cluster
-```
