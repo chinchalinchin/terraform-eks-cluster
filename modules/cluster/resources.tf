@@ -1,3 +1,13 @@
+resource "aws_eip" "cluster_ip" {
+    vpc                                                 = true
+    tags                                                = {
+                                                            Organization    = "AutomationLibrary"
+                                                            Team            = "BrightLabs"
+                                                            Service         = "ec2"
+                                                        }
+}
+
+
 resource "aws_kms_key" "automation_library_key" {
     description                                         = "KMS key for encrypting cluster secrets"
     deletion_window_in_days                             = 10
@@ -109,13 +119,10 @@ resource "aws_eks_cluster" "automation_library_cluster" {
                                                             var.vpc_config.private_subnet_ids
                                                         )
         public_access_cidrs                             = concat(
-                                                            var.source_ips,
-                                                            [
-                                                                data.aws_vpc.cluster_vpc.cidr_block
-                                                            ]
+                                                            var.source_ips
                                                         )
         endpoint_private_access                         = var.production
-        endpoint_public_access                          = var.production
+        endpoint_public_access                          = !var.production
     }
 
 }

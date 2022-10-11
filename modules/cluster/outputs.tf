@@ -1,3 +1,11 @@
+output "elastic-ip" {
+    value                                               = aws_eip.cluster_ip.public_ip
+}
+
+output "elastic-dns" {
+    value                                               = aws_eip.cluster_ip.public_dns
+}
+
 output "endpoint" {
     value                                               = aws_eks_cluster.automation_library_cluster.endpoint
 }

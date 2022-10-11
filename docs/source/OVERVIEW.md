@@ -9,8 +9,14 @@ A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** manag
 ## References
 ### Repositories
 - [aws/amazon-vpc-cni-k8s](https://github.com/aws/amazon-vpc-cni-k8s)
+- [aws-quickstart/quickstart-eks-gitlab](https://github.com/aws-quickstart/quickstart-eks-gitlab)
+- [gitlab-org/gitlab-environment-toolkit](https://gitlab.com/gitlab-org/gitlab-environment-toolkit/-/tree/main)
 - [kubernetes-sigs/external-dns](https://github.com/kubernetes-sigs/external-dns)
 - [kubernetes-sigs/aws-ebs-csi-driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver)
+### Guides
+- [EKS Gitlab Quickstart](https://aws-quickstart.github.io/quickstart-eks-gitlab/)
+### AWS Documentation
+- [Elastic IPs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html#using-instance-addressing-eips-allocating)
 ### AWS EKS Documentation
 - [Security Best Practices](https://aws.github.io/aws-eks-best-practices/security/docs/)
 - [Security Group Considerations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
