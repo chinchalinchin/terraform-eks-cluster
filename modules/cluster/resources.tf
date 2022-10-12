@@ -136,6 +136,7 @@ resource "aws_iam_openid_connect_provider" "cluster_iam_oidc" {
   url                                                   = data.tls_certificate.cluster_oidc_cert.url
 }
 
+
 resource "aws_eks_addon" "ebs_plugin" {
     addon_name                                          = "aws-ebs-csi-driver"
     addon_version                                       = "v1.11.2-eksbuild.1"

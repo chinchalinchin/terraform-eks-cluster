@@ -1,5 +1,6 @@
 #### Non-defaultable variables
-#### NOTE: These variables must be passed in through environment variables!
+#### NOTE: These variables contain information that must be kept secret! 
+####    These variables must be passed in through environment variables!
 ####    Do not commit their values to version control!
 variable "source_ips" {
     description = "IPs to whitelist for remote SSH access to pods and ingress into the bastion host"
@@ -16,6 +17,8 @@ variable "vpc_config" {
 }
 
 #### Defaultable variables
+#### NOTE: These variables are safe to default, since they do not have any 
+####        any information that must be kept secret.
 variable "production" {
     description = "Enable production deployment"
     type = bool
