@@ -25,9 +25,11 @@ output "bastion-dns"{
     value                                               = var.production ? aws_instance.automation_library_bastion_host[0].public_dns : null
 }
 
+
 output "ebs-csi-plugin-arn" {
     value                                               = aws_eks_addon.ebs_plugin.arn
 }
+
 
 output "kubeconfig-certificate-authority-data" {
     value                                               = aws_eks_cluster.automation_library_cluster.certificate_authority[0].data

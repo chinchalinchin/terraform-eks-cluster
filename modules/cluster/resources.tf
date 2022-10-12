@@ -128,10 +128,22 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 }
 
 
+resource "aws_iam_openid_connect_provider" "cluster_iam_oidc" {
+  client_id_list                                        = [
+                                                            "sts.amazonaws.com"
+                                                        ]
+  thumbprint_list                                       = data.tls_certificate.cluster_oidc_cert.certificates.*.sha1_fingerprint
+  url                                                   = data.tls_certificate.cluster_oidc_cert.url
+}
+
 resource "aws_eks_addon" "ebs_plugin" {
     addon_name                                          = "aws-ebs-csi-driver"
+    addon_version                                       = "v1.11.2-eksbuild.1"
     cluster_name                                        = aws_eks_cluster.automation_library_cluster.name
     service_account_role_arn                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.ebs_role_name}"
+    depends_on                                          = [
+                                                            aws_iam_openid_connect_provider.cluster_iam_oidc
+                                                        ]
 }
 
 

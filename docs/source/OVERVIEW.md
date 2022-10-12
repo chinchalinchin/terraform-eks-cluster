@@ -46,5 +46,6 @@ A **Terraform** module for a deploying an **EKS** cluster with **AWS ECS** manag
 - [KMS Key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)
 - [Security Group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
 - [Security Group Rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)
+- [TLS Certificate](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate)
 ### Stack Overflow
 - [Determine Terraform Module Least Permissions](https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary)
