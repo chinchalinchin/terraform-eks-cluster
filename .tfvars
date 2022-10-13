@@ -10,16 +10,16 @@ bastion_role_name = "AWSRoleForEKS"
 ec2_ssh_key = "al_cluster_key"
 
 # WARNING: These variables are just for show! See Above.
-vpc_id="vpc-xxxxx"
-public_subnet_ids = [
-    "subnet-xxxxx", 
-    "subnet-xxxxx"
-]
-private_subnet_ids = [
-    "subnet-xxxx",
-    "subnet-xxxx"
-]
-source_ips = [
-    "x.x.x.x/xx", 
-    "x.x.x.x/x.x"
-]
+# vpc_id="vpc-xxxxx"
+# public_subnet_ids = [
+#     "subnet-xxxxx", 
+#     "subnet-xxxxx"
+# ]
+# private_subnet_ids = [
+#     "subnet-xxxx",
+#     "subnet-xxxx"
+# ]
+# source_ips = [
+#     "x.x.x.x/xx", 
+#     "x.x.x.x/x.x"
+# ]
