@@ -37,7 +37,7 @@ jobs:
     uses: AutomationLibrary/actions-workflows/.github/workflows/tf-lint.yml@main
 
   Docs:
-    uses: AutomationLibrary/actions-workflows/.github/workflows/tf-docs.yml@main
+    uses: AutomationLibrary/actions-workflows/.github/workflows/gh-pages.yml@main
     secrets:
       ACTIONS_BOT_USERNAME: ${{ secrets.ACTIONS_BOT_USERNAME }}
       ACTIONS_BOT_EMAIL: ${{ secrets.ACTIONS_BOT_EMAIL }}
