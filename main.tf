@@ -1,4 +1,4 @@
-module "automation-library-cluster" {
+module "cluster" {
     source                                  = "./modules/cluster"
 
     source_ips                              = var.source_ips
