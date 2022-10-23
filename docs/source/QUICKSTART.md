@@ -134,9 +134,50 @@ aws eks update-kubeconfig \
 As this repository is meant to support the infrastructure for a **GitLab** deployment, the **Terraform** module deploys a **PostgreSQL** relational database service, along with all of the secondary resources necessary to support its functioning. Of interest in this section is the **SecretsManager** secret for the **Postgres RDS** that is provisioned, as this secret will need passed into a **Kubernetee** secret. After **Terraform** deploys the modules, you can grab the secret from the **SecretsManager** (you may need to adjust your **IAM** policy to allow you to retrieve the secret) and then pass it into **k8s** with the following command,
 
 ```shell
-kubectl create secret generic <helm-release-name>-postgresql-password \
+kubectl create secret generic automation-library-gitlab-postgresql-password \
     --from-literal=postgresql-password=<secret-password> \
     --from-literal=postgresql-postgres-password=<secret-password>
 ```
 
 `<helm-release-name>` corresponds to the name assigned to the **Helm** release when **GitLab** was installed from its chart. 
+
+**TODO**: Create API yaml for this secret.
+
+### Gitlab Runner Secret
+
+Grab a registration token from the **Gitlab** UI and store it in a **Kubernetes** secret; update the _k8s/gitlab-runner-secret.yml_ and then post it to the cluster. See [documentation](https://docs.gitlab.com/runner/register/) for more information.
+
+```shell
+kubectl apply -f ./k8s/gitlab-runner-secret.yml
+```
+
+## Gitlab Setup
+
+```shell
+helm install \
+  automation-library-gitlab gitlab/gitlab \
+    --set nginx-ingress.controller.service.annotations="service.beta.kubernetes.io/aws-load-balancer-ssl-cert: $CERTIFICATE_ARN" \
+    --set global.hosts.externalIP="$ELASTIC_IP" \
+    --set postgresql.install="false" \
+    --set global.psql.host="$RDS_HOST" \
+    --set global.psql.password.secret="automation-library-gitlab-postgresql-password" \
+    --set global.psql.password.key="postgres-password"
+    --set global.psql.port="5432" \
+    --set global.psql.database="gitlabhq_production" \
+    --set global.psql.username="gitlab"
+```
+
+Alternatively, a _values.yml_ can be found in the _helm/gitlab_ directory.
+
+## Gitlab Runner Setup
+
+```shell
+helm install \
+  --namespace $K8S_NAMESPACE \
+  automation-library-gitlab-runner gitlab/gitlab-runner \
+    --set gitlabUrl=$GITLAB_URL \
+    --set rbac.create="true" \
+    --set runners.secret="gitlab-runner-secret" 
+```
+
+Alternatively, a _values.yml_ can be found in the _helm/runner_ directory.

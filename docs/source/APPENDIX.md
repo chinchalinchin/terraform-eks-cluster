@@ -19,6 +19,7 @@
 - [Storage Classes](https://docs.aws.amazon.com/eks/latest/userguide/storage-classes.html)
 - [EBS Container Storage Interface Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
 ## Gitlab Documentation
+### Gitlab 
 - [Docker Image](https://docs.gitlab.com/ee/install/docker.html)
 - [Helm Chart](https://docs.gitlab.com/charts/)
 - [Test Gitlab on AWS EKS](https://docs.gitlab.com/charts/quickstart/)
@@ -27,6 +28,9 @@
 - [Use AWS ACM to Manage Certificates](https://docs.gitlab.com/charts/installation/tls.html#use-aws-acm-to-manage-certificates)
 - [Configure External PostgresSQL](https://docs.gitlab.com/charts/advanced/external-db/index.html)
 - [Configure External Redis](https://docs.gitlab.com/charts/advanced/external-redis/index.html)
+### Gitlab Runner
+- [Install Runner](https://docs.gitlab.com/runner/)
+- [Helm Chart](https://docs.gitlab.com/runner/install/kubernetes.html)
 ## Kubernetes Documentation
 - [Service: SSL Support on AWS](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
 - [Volume: AWS EBS Configuration](https://kubernetes.io/docs/concepts/storage/volumes/#aws-ebs-configuration-example)
