@@ -1,4 +1,4 @@
-# Module: Cluster
+# Module: Persistence
 
 <!-- BEGIN_TF_DOCS -->
   Placeholder for Terraform Docs

@@ -7,5 +7,8 @@ Welcome to your-project's documentation!
 
    OVERVIEW
    QUICKSTART
+   MODULE_CLUSTER
+   MODULE_PERSISTENCE
    CONFIGURATION
    CONTRIBUTING
+   APPENDIX

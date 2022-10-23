@@ -74,7 +74,7 @@ resource "aws_db_instance" "gitlab_rds" {
     db_name                                             = "gitlabhq_production"
     db_subnet_group_name                                = aws_db_subnet_group.gitlab_rds_subnets.id
     enabled_cloudwatch_logs_exports                     = [ 
-                                                            "postgres" 
+                                                            "postgresql" 
                                                         ]
     engine                                              = "postgres"
     engine_version                                      = "13.7"
@@ -87,7 +87,7 @@ resource "aws_db_instance" "gitlab_rds" {
     port                                                = 5432
     publicly_accessible                                 = false
     storage_encrypted                                   = true
-    storage_type                                        = "gp3"
+    storage_type                                        = "gp2"
     tags                                                = {
                                                             Organization    = "AutomationLibrary"
                                                             Team            = "BrightLabs"
