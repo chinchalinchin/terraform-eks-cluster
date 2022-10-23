@@ -26,9 +26,9 @@ output "bastion-dns"{
 }
 
 
-output "ebs-csi-plugin-arn" {
-    value                                               = aws_eks_addon.ebs_plugin.arn
-}
+# output "ebs-csi-plugin-arn" {
+#     value                                               = aws_eks_addon.ebs_plugin.arn
+# }
 
 
 output "kubeconfig-certificate-authority-data" {

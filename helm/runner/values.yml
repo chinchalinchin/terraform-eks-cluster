@@ -1,0 +1,5 @@
+gitlabUrl: <url-goes-here>
+rbac:
+  create: true
+runners:
+  secret: gitlab-runner-secret

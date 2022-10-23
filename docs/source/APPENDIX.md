@@ -13,11 +13,10 @@
 ## EKS
 - [Security Best Practices](https://aws.github.io/aws-eks-best-practices/security/docs/)
 - [Security Group Considerations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
-- [Getting Started](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
-- [Deploying a Sample Application](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
-- [Proposal: CNI Plugin For Kubernetes networking over AWS VPC](https://github.com/aws/amazon-vpc-cni-k8s)
+- [OIDC Identity Provider](https://docs.aws.amazon.com/eks/latest/userguide/authenticate-oidc-identity-provider.html)
 - [VPC Considerations](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
 - [Cluster Endpoint Access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html)
+- [Storage Classes](https://docs.aws.amazon.com/eks/latest/userguide/storage-classes.html)
 - [EBS Container Storage Interface Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
 ## Gitlab Documentation
 - [Docker Image](https://docs.gitlab.com/ee/install/docker.html)
@@ -26,10 +25,12 @@
 - [AWS EKS Cloud Resources](https://docs.gitlab.com/charts/installation/cloud/eks.html)
 - [Global Configuration](https://docs.gitlab.com/charts/charts/globals.html)
 - [Use AWS ACM to Manage Certificates](https://docs.gitlab.com/charts/installation/tls.html#use-aws-acm-to-manage-certificates)
-- [Issue: Install Helm Chart Without Domain?](https://gitlab.com/gitlab-org/charts/gitlab/-/issues/3182)
+- [Configure External PostgresSQL](https://docs.gitlab.com/charts/advanced/external-db/index.html)
+- [Configure External Redis](https://docs.gitlab.com/charts/advanced/external-redis/index.html)
 ## Kubernetes Documentation
 - [Service: SSL Support on AWS](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
 - [Volume: AWS EBS Configuration](https://kubernetes.io/docs/concepts/storage/volumes/#aws-ebs-configuration-example)
+- [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
 ## Terraform Documentation
 ### EKS
 - [eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)

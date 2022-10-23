@@ -41,8 +41,9 @@ resource "aws_db_subnet_group" "gitlab_rds_subnets" {
                                                         }
 }
 
+
 resource "aws_security_group" "database_sg" {
-    name                                                = "al-cluster-remote-access-sg"
+    name                                                = "database-access-sg"
     description                                         = "Bastion host security group"
     vpc_id                                              = var.vpc_config.id
     tags                                                = {
@@ -53,7 +54,7 @@ resource "aws_security_group" "database_sg" {
 }
 
 
-resource "aws_security_group_rule" "remote_access_ingress" {
+resource "aws_security_group_rule" "database_ingress" {
     description                                         = "Restrict database access to VPC CIDR Block"
     type                                                = "ingress"
     from_port                                           = 0
@@ -78,14 +79,15 @@ resource "aws_db_instance" "gitlab_rds" {
                                                         ]
     engine                                              = "postgres"
     engine_version                                      = "13.7"
-    kms_key_id                                          = aws_kms_key.rds_key.id
+    kms_key_id                                          = aws_kms_key.rds_key.arn
     instance_class                                      = "db.t3.medium"
     username                                            = "gitlab"
     password                                            = random_password.gitlab_rds_password.result
     performance_insights_enabled                        = true
-    performance_insights_kms_key_id                     = aws_kms_key.rds_key.id
+    performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn
     port                                                = 5432
     publicly_accessible                                 = false
+    skip_final_snapshot                                 = true
     storage_encrypted                                   = true
     storage_type                                        = "gp2"
     tags                                                = {

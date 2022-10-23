@@ -1,0 +1,17 @@
+global:
+  hosts:
+    externalIP: <elastic-ip-goes-here>
+  psql:
+    host: <rds-endpoint-goes-here>
+    password:
+      secret: automation-library-gitlab-postgresql-password
+    port: 5432
+    database: gitlabhq_production
+    username: gitlab
+nginx-ingress:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <certificate-arn-goes-here>
+postgresql:
+  install: false
