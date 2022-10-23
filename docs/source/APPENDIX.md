@@ -31,15 +31,27 @@
 - [Service: SSL Support on AWS](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
 - [Volume: AWS EBS Configuration](https://kubernetes.io/docs/concepts/storage/volumes/#aws-ebs-configuration-example)
 ## Terraform Documentation
-## EKS
+### EKS
 - [eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 - [eks_node_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
+### EC2
 - [instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance)
+### IAM
 - [iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile)
 - [key_pair](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair)
+### KMS
 - [kms_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key)
+### RDS
+- [db_instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance)
+- [db_subnet_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group)
+### SM
+- [secretsmanger_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret)
+- [secretsmanager_secret_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version)
+### VPC
+- [db_subnet_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group)
 - [security_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
 - [security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)
+### Data Sources
 - [certificate](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate)
 ## Stack Overflow
 - [Determine Terraform Module Least Permissions](https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary)

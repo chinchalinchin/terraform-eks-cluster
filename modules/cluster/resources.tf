@@ -8,7 +8,7 @@ resource "aws_eip" "cluster_ip" {
 }
 
 
-resource "aws_kms_key" "automation_library_key" {
+resource "aws_kms_key" "cluster_key" {
     description                                         = "KMS key for encrypting cluster secrets"
     deletion_window_in_days                             = 10
     enable_key_rotation                                 = true
@@ -109,7 +109,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
                                                         ]
 
         provider {
-            key_arn                                     = aws_kms_key.automation_library_key.arn
+            key_arn                                     = aws_kms_key.cluster_key.arn
         }
     }
 
