@@ -9,3 +9,10 @@ module "cluster" {
     eks_config                              = var.eks_config
     bastion_config                          = var.bastion_config
 }
+
+module "persistence" {
+    source                                  = "./modules/persistence"
+
+    iam_config                              = var.iam_config
+    vpc_config                              = var.vpc_config
+}

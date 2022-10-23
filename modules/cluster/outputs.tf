@@ -37,10 +37,10 @@ output "kubeconfig-certificate-authority-data" {
 
 
 output "kms-key-arn" {
-    value                                               = aws_kms_key.automation_library_key.arn
+    value                                               = aws_kms_key.cluster_key.arn
 }
 
 
 output "kms-key-id" {
-    value                                               = aws_kms_key.automation_library_key.id
+    value                                               = aws_kms_key.cluster_key.id
 }
