@@ -119,7 +119,10 @@ resource "aws_eks_cluster" "automation_library_cluster" {
                                                             var.vpc_config.private_subnet_ids
                                                         )
         public_access_cidrs                             = concat(
-                                                            var.source_ips
+                                                            var.source_ips,
+                                                            [
+                                                                data.aws_vpc.cluster_vpc.cidr_block
+                                                            ]
                                                         )
         endpoint_private_access                         = var.production
         endpoint_public_access                          = !var.production
