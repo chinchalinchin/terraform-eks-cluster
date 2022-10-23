@@ -42,7 +42,7 @@ resource "aws_db_subnet_group" "gitlab_rds_subnets" {
 
 
 /**
-* For GitLab external DB requirements, see: https://docs.gitlab.com/charts/advanced/external-db/index.html
+ * For GitLab external DB requirements, see: https://docs.gitlab.com/charts/advanced/external-db/index.html
 **/
 resource "aws_db_instance" "gitlab_rds" {
     allocated_storage                                   = 20
