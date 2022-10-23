@@ -8,6 +8,7 @@ variable "source_ips" {
     sensitive                       = true
 }
 
+
 variable "vpc_config" {
     description                     = "Configuration information for the VPC into which the cluster will deploy"
     type = object({
@@ -18,6 +19,7 @@ variable "vpc_config" {
     sensitive                       = true
 }
 
+
 #### Defaultable variables
 #### NOTE: These variables are safe to default, since they do not have any 
 ####        any information that must be kept secret.
@@ -27,11 +29,13 @@ variable "production" {
     default                         = false
 }
 
+
 variable "ssh_key" {
     description                     = "Name of the public SSH key in the EC2 keyring. NOTE: this key must exist in the keyring before launching this Terraform moduel. Refer to QUICKSTART documentation for more information."
     type                            = string
     default                         = "al_cluster_key"
 }
+
 
 variable "iam_config" {
     description = "IAM configuration for cluster roles and bastion instance profile"
@@ -62,6 +66,7 @@ variable "eks_config" {
         instance_type               = "m5.xlarge"
     }
 }
+
 
 variable "bastion_config" {
     description                     = "Configuration for the bastion host deployed into public subnet of VPC. AMI defaults to us-east-1 Ubuntu 16.04. See the following to find the image in your region: https://cloud-images.ubuntu.com/locator/ec2/"

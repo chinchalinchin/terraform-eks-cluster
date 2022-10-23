@@ -7,6 +7,7 @@ resource "aws_kms_key" "rds_key" {
     is_enabled                                          = true
 }
 
+
 resource "random_password" "gitlab_rds_password" {
   length                                                = 20
   special                                               = true
@@ -40,6 +41,30 @@ resource "aws_db_subnet_group" "gitlab_rds_subnets" {
                                                         }
 }
 
+resource "aws_security_group" "database_sg" {
+    name                                                = "al-cluster-remote-access-sg"
+    description                                         = "Bastion host security group"
+    vpc_id                                              = var.vpc_config.id
+    tags                                                = {
+                                                            Organization    = "AutomationLibrary"
+                                                            Team            = "BrightLabs"
+                                                            Service         = "eks"
+                                                        }
+}
+
+
+resource "aws_security_group_rule" "remote_access_ingress" {
+    description                                         = "Restrict database access to VPC CIDR Block"
+    type                                                = "ingress"
+    from_port                                           = 0
+    to_port                                             = 0
+    protocol                                            = "-1"
+    cidr_blocks                                         = [
+                                                                data.aws_vpc.cluster_vpc.cidr_block
+                                                        ]
+    security_group_id                                   = aws_security_group.database_sg.id
+} 
+
 
 /**
  * For GitLab external DB requirements, see: https://docs.gitlab.com/charts/advanced/external-db/index.html
@@ -48,18 +73,27 @@ resource "aws_db_instance" "gitlab_rds" {
     allocated_storage                                   = 20
     db_name                                             = "gitlabhq_production"
     db_subnet_group_name                                = aws_db_subnet_group.gitlab_rds_subnets.id
+    enabled_cloudwatch_logs_exports                     = [ 
+                                                            "postgres" 
+                                                        ]
     engine                                              = "postgres"
     engine_version                                      = "13.7"
     kms_key_id                                          = aws_kms_key.rds_key.id
     instance_class                                      = "db.t3.medium"
     username                                            = "gitlab"
     password                                            = random_password.gitlab_rds_password.result
+    performance_insights_enabled                        = true
+    performance_insights_kms_key_id                     = aws_kms_key.rds_key.id
+    port                                                = 5432
+    publicly_accessible                                 = false
+    storage_encrypted                                   = true
+    storage_type                                        = "gp3"
     tags                                                = {
                                                             Organization    = "AutomationLibrary"
                                                             Team            = "BrightLabs"
                                                             Service         = "rds"
                                                         }
     vpc_security_group_ids                              = [
-                                                            "need cluster ingress"
+                                                            aws_security_group.database_sg.id
                                                         ]
 }

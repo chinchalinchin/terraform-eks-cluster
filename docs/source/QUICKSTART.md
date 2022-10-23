@@ -23,27 +23,17 @@ source ./.env
 
 The values prefixed by **TF_VAR_** are passed into **Terraform** through the [TF_VAR syntax](https://www.terraform.io/cli/config/environment-variables), rather than the _.tfvars_ file, to avoid committing sensitive information to version control. The other environment variables in this file are not necessarily to deploy the module, but are useful in administrative activities.
 
-### Kube Config
-
-After **Terraform** has deployed the **EKS** cluster, update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
-
-```shell
-aws eks update-kubeconfig \
-  --region us-east-1 \
-  --name automation-library-cluster
-```
-
 ## Remote Access
 
-The **EKS** cluster is deployed into private subnets within the VPC, therefore it is not publicly accessible. A **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running if ther **Terraform** variable `production` is set to `true`; This will allow the cluster admin to SSH access to the cluster. 
+The **EKS** cluster is deployed into private subnets within the VPC without a public endpoint, therefore it is not publicly accessible. An **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running if ther **Terraform** variable `production` is set to `true`; This will allow the cluster admin to SSH access to the cluster. 
 
 The bastion host instance has a role attached to it through its [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) that allows it to make authenticated API calls to the cluster, allowing commands like `kubectl` and `helm` to be run against the cluster. In order to do so, you will need to remote into the aforementioned **EC2** bastion host that gets deployed as part of the module. In order to secure access to the **EC2**, the procedures below detail how to setup the key-pair in the **EC2** key ring and then use that key to SSH into it. In addition, this key is used for SSH access to the pods as well. 
 
-**NOTE**: If `production` is set to `false`, the bastion host is _not_ deployed; instead public access is enabled to the **EKS** kubernetes API. In this case, you must ensure `source_ips` includes any IPs that will need access to the API.
+**NOTE**: If `production` is set to `false`, the bastion host is _not_ deployed; instead public access is enabled to the **EKS k8s**  API. In this case, you must ensure `source_ips` includes any IPs that will need access to the API, as all traffic to the cluster from outside of the VPC is restricted to this whitelist.
 
 ### Generate SSH Key Pair
 
-Before deploying the **Terraform** module, generate the key locally with the following command,
+Before deploying the **Terraform** module, generate an SSH key locally with the following command,
 
 ```shell
 ssh-keygen \
@@ -109,7 +99,7 @@ Nodes need an **IAM** role with the following managed policies attached: `Amazon
 
 ### EBS Role
 
-The [EBS Container Stroage Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) requires an **IAM** role with the the **AWS** managed policy `AmazonEBSCSIDriverPolicy` attached.
+The [EBS Container Storage Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) requires an **IAM** role with the the **AWS** managed policy `AmazonEBSCSIDriverPolicy` attached.
 
 [See AWS EBS CSI docs for more information.](https://docs.aws.amazon.com/eks/latest/userguide/csi-iam-role.html)
 
@@ -120,3 +110,33 @@ If deploying with `production = true`, the **EC2** bastion host will need an ins
 [See AWS EC2 Instance Profile docs for more information](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html)
 
 **TODO**: Still experimenting with the exact permissions these profile will need. 
+
+### RDS Monitoring Role
+
+The **RDS** instances needs a role to publish logs to **CloudWatch**. This role will need the managed policy `AmazonRDSEnhancedMonitoringRole` attached to the service principlie of `monitoring.rds.amazonaws.com`
+
+[See AWS RDS Enhanced Monitoring docs for more information](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Enabling.html)
+
+## Kubernetes Setup
+
+### EKS kubeconfig
+
+After **Terraform** has deployed the **EKS** cluster, update your local _kubeconfig_ to point to the cluster on **EKS** ([Step 3: AWS EKS Setup Documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)),
+
+```shell
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name automation-library-cluster
+```
+
+### PostgreSQL Password Secret
+
+As this repository is meant to support the infrastructure for a **GitLab** deployment, the **Terraform** module deploys a **PostgreSQL** relational database service, along with all of the secondary resources necessary to support its functioning. Of interest in this section is the **SecretsManager** secret for the **Postgres RDS** that is provisioned, as this secret will need passed into a **Kubernetee** secret. After **Terraform** deploys the modules, you can grab the secret from the **SecretsManager** (you may need to adjust your **IAM** policy to allow you to retrieve the secret) and then pass it into **k8s** with the following command,
+
+```shell
+kubectl create secret generic <helm-release-name>-postgresql-password \
+    --from-literal=postgresql-password=<secret-password> \
+    --from-literal=postgresql-postgres-password=<secret-password>
+```
+
+`<helm-release-name>` corresponds to the name assigned to the **Helm** release when **GitLab** was installed from its chart. 
