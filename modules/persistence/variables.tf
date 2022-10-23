@@ -11,7 +11,7 @@ variable "vpc_config" {
 
 # Defaultable
 variable "iam_config" {
-    description = "IAM configuration for cluster roles and bastion instance profile"
+    description                     = "IAM configuration for cluster roles and bastion instance profile"
     type = object({
         cluster_role_name           = string
         node_role_name              = string

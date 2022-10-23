@@ -5,6 +5,7 @@
 
 # These variables are safe...
 production                  = false
+secrets                     = false
 ssh_key                     = "al_cluster_key"
 iam_config = {
     cluster_role_name       = "AWSRoleForEKS"

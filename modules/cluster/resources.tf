@@ -171,7 +171,8 @@ resource "aws_eks_node_group" "automation-library-ng" {
     remote_access {
         ec2_ssh_key                                     = var.ssh_key
         source_security_group_ids                       = [
-                                                            aws_security_group.remote_access_sg.id
+                                                            aws_security_group.remote_access_sg.id,
+                                                            aws_eks_cluster.automation_library_cluster.vpc_config[0].cluster_security_group_id
                                                         ]
     }
 }

@@ -20,7 +20,7 @@ resource "random_password" "gitlab_rds_password" {
 resource "aws_secretsmanager_secret" "gitlab_rds_password_secret"{
     description                                         = "Password for Gitlab RDS superuser"
     kms_key_id                                          = aws_kms_key.rds_key.id
-    name                                                = "gitlab-rds-password"
+    name                                                = "automation-library-gitlab-rds-password"
 }
 
 
@@ -31,7 +31,7 @@ resource "aws_secretsmanager_secret_version" "gitlab_rds_password_secret_version
 
 
 resource "aws_db_subnet_group" "gitlab_rds_subnets" {
-    name                                                = "gitlab-db-subnet-group"
+    name                                                = "automation-library-gitlab-db-subnet-group"
     description                                         = "Subnet group for out-of-cluster RDS persistence (recommended by GitLab documentation)"
     subnet_ids                                          = var.vpc_config.private_subnet_ids
     tags                                                = {
@@ -43,7 +43,7 @@ resource "aws_db_subnet_group" "gitlab_rds_subnets" {
 
 
 resource "aws_security_group" "database_sg" {
-    name                                                = "database-access-sg"
+    name                                                = "automation-library-gitlab-db-access-sg"
     description                                         = "Bastion host security group"
     vpc_id                                              = var.vpc_config.id
     tags                                                = {
