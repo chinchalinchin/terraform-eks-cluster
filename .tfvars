@@ -3,9 +3,8 @@
 # !      SENSITIVE INFO SHOULD BE PASSED IN USING ENVIRONMENT VARIABLES
 # !      SEE: https://www.terraform.io/cli/config/environment-variables
 
-# These variables are safe...
+# These variables are safe to commit...
 production                  = false
-secrets                     = false
 ssh_key                     = "al_cluster_key"
 iam_config = {
     cluster_role_name       = "AWSRoleForEKS"

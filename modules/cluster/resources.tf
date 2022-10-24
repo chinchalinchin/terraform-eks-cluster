@@ -114,18 +114,16 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
     vpc_config {
+        public_access_cidrs                             = !var.production ?  var.source_ips : [ "0.0.0.0/0" ]
+        endpoint_private_access                         = true
+        endpoint_public_access                          = !var.production
         subnet_ids                                      = concat(
                                                             var.vpc_config.public_subnet_ids,
                                                             var.vpc_config.private_subnet_ids
                                                         )
-        public_access_cidrs                             = concat(
-                                                            var.source_ips,
-                                                            [
-                                                                data.aws_vpc.cluster_vpc.cidr_block
-                                                            ]
-                                                        )
-        endpoint_private_access                         = var.production
-        endpoint_public_access                          = !var.production
+        security_group_ids                              = [
+                                                            aws_security_group.remote_access_sg.id
+                                                        ]
     }
 
 }
@@ -175,7 +173,6 @@ resource "aws_eks_node_group" "automation-library-ng" {
         ec2_ssh_key                                     = var.ssh_key
         source_security_group_ids                       = [
                                                             aws_security_group.remote_access_sg.id,
-                                                            aws_eks_cluster.automation_library_cluster.vpc_config[0].cluster_security_group_id
                                                         ]
     }
 }
