@@ -4,6 +4,7 @@
 variable "source_ips" {
     description = "IPs to whitelist for remote SSH access to pods and ingress into the bastion host"
     type = list(string)
+    sensitive = true
 }
 
 variable "vpc_config" {
@@ -13,6 +14,7 @@ variable "vpc_config" {
         public_subnet_ids = list(string)
         private_subnet_ids = list(string)
     })
+    sensitive = true
 }
 
 #### Defaultable variables

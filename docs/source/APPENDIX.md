@@ -18,6 +18,9 @@
 - [Cluster Endpoint Access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html)
 - [Storage Classes](https://docs.aws.amazon.com/eks/latest/userguide/storage-classes.html)
 - [EBS Container Storage Interface Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+### Route53
+- [Private Hosted Zones](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html)
+- [VPC DNS: Private Hosted Zones](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-private-hosted-zones)
 ## Gitlab Documentation
 ### Gitlab 
 - [Docker Image](https://docs.gitlab.com/ee/install/docker.html)
@@ -49,6 +52,9 @@
 ### RDS
 - [db_instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance)
 - [db_subnet_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group)
+### Route53
+- [route53_zone](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_zone)
+- [route53_record](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record)
 ### SM
 - [secretsmanger_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret)
 - [secretsmanager_secret_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version)

@@ -8,6 +8,26 @@ resource "aws_eip" "cluster_ip" {
 }
 
 
+resource "aws_route53_zone" "private_zone" {
+  name                                                  = "automation-library-cluster.com"
+
+  vpc {
+    vpc_id                                              = var.vpc_config.id
+  }
+}
+
+
+resource "aws_route53_record" "cluster_a_record" {
+  zone_id                                               = aws_route53_zone.private_zone.zone_id
+  name                                                  = "automation-library-cluster.com"
+  type                                                  = "A"
+  ttl                                                   = 300
+  records                                               = [
+                                                            aws_eip.cluster_ip.public_ip
+                                                        ]
+}
+
+
 resource "aws_kms_key" "cluster_key" {
     description                                         = "KMS key for encrypting cluster secrets"
     deletion_window_in_days                             = 10
@@ -71,7 +91,7 @@ resource "aws_security_group_rule" "remote_access_egress" {
 
 
 resource "aws_instance" "automation_library_bastion_host" {
-    count                                               = var.production ? 1 : 0
+    # count                                               = var.production ? 1 : 0
     ami                                                 = var.bastion_config.ami
     associate_public_ip_address                         = true
     # TODO: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
