@@ -15,7 +15,7 @@ source $SCRIPT_DIR/../.env
     # --set certmanager-issuer.email="625518@bah.com" \
 
 helm install $HELM_RELEASE gitlab/gitlab \
-    --set global.hosts.domain="automation-library-cluster.com" \
+    --set global.hosts.domain="$DOMAIN" \
     --set certmanager-issuer.email="625518@bah.com" \
     --set postgresql.install="false" \
     --set global.psql.host="$RDS_HOST" \

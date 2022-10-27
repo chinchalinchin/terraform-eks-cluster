@@ -1,6 +1,7 @@
 global:
   hosts:
     externalIP: <elastic-ip-goes-here>
+    domain: <domain-goes-here>
   psql:
     host: <rds-endpoint-goes-here>
     password:
@@ -8,10 +9,28 @@ global:
     port: 5432
     database: gitlabhq_production
     username: gitlab
+  ingress:
+    # Disable TLS termination on Ingress objects, by NGINX
+    tls:
+      enabled: false
+# see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-layer7-loadbalancer.yaml
 nginx-ingress:
   controller:
+    config:
+      # pass the X-Forwarded-* headers directly from the upstream
+      use-forwarded-headers: "true"
     service:
       annotations:
-        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <certificate-arn-goes-here>
+        # Layer 7, injects X-Forwarded-* headers
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+        # Configure ACM certifiates
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <cert arn goes here>
+        # Configure which ports are to terminate SSL.
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+      targetPorts:
+        https: http # the ELB will send HTTP to 443
+
+
 postgresql:
   install: false

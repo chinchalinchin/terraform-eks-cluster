@@ -20,8 +20,15 @@ variable "vpc_config" {
 #### Defaultable variables
 variable "region" {
     description                         = "Region where resources are deployed"
-    type                               = string
+    type                                = string
     default                             = "us-east-1"
+}
+
+
+variable "private_domain"{
+    description                         = "Domain for private DNS servers"
+    type                                = string
+    default                             = "bah-automation-library.com"
 }
 
 

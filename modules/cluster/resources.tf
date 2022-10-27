@@ -1,32 +1,11 @@
-resource "aws_route53_zone" "private_zone" {
-  name                                                  = "automation-library.com"
+# resource "aws_route53_zone" "private_zone" {
+#   name                                                  = var.private_domain
 
-  vpc {
-    vpc_id                                              = var.vpc_config.id
-  }
-}
+#   vpc {
+#     vpc_id                                              = var.vpc_config.id
+#   }
 
-
-resource "aws_route53_record" "bastion_private_record" {
-  zone_id                                               = aws_route53_zone.private_zone.zone_id
-  name                                                  = "bastion.automation-library.com"
-  type                                                  = "A"
-  ttl                                                   = 300
-  records                                               = [
-                                                            aws_eip.bastion_ip.public_ip
-                                                        ]
-}
-
-
-resource "aws_route53_record" "bastion_public_record" {
-  zone_id                                               = data.aws_route53_zone.public_domain.zone_id
-  name                                                  = "bastion.${data.aws_route53_zone.public_domain.name}"
-  type                                                  = "A"
-  ttl                                                   = 300
-  records                                               = [
-                                                            aws_eip.bastion_ip.public_ip
-                                                        ]
-}
+# }
 
 
 resource "aws_kms_key" "cluster_key" {
@@ -101,12 +80,21 @@ resource "aws_eip" "bastion_ip" {
 }
 
 
-
 resource "aws_eip_association" "eip_assoc" {
-  instance_id                                            = aws_instance.automation_library_bastion_host.id
-  allocation_id                                          = aws_eip.bastion_ip.id
+    instance_id                                         = aws_instance.automation_library_bastion_host.id
+    allocation_id                                       = aws_eip.bastion_ip.id
 }
 
+
+resource "aws_route53_record" "bastion_public_record" {
+  zone_id                                               = data.aws_route53_zone.public_domain.zone_id
+  name                                                  = "bastion.${data.aws_route53_zone.public_domain.name}"
+  type                                                  = "A"
+  ttl                                                   = 300
+  records                                               = [
+                                                            aws_eip.bastion_ip.public_ip
+                                                        ]
+}
 
 resource "aws_instance" "automation_library_bastion_host" {
     ami                                                 = var.bastion_config.ami
@@ -115,7 +103,7 @@ resource "aws_instance" "automation_library_bastion_host" {
     #       use this to generate key-pair instead of doing it manually and passing in the keyname.
     key_name                                            = var.ssh_key
     iam_instance_profile                                = var.iam_config.bastion_profile_name
-    instance_type                                       = "t3.nano"
+    instance_type                                       = "t3.xlarge"
     user_data                                           = templatefile("${path.root}/scripts/user-data.sh", {
                                                             eks_cluster_name = aws_eks_cluster.automation_library_cluster.name
                                                             aws_default_region = var.region
@@ -129,6 +117,16 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                             Team = "BrightLabs"
                                                             Organization = "AutomationLibrary"
                                                             Service = "ec2"
+                                                        }
+}
+
+
+resource "aws_eip" "cluster_ip" {
+    vpc                                                 = true
+    tags                                                = {
+                                                            Organization    = "AutomationLibrary"
+                                                            Team            = "BrightLabs"
+                                                            Service         = "eks"
                                                         }
 }
 

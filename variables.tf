@@ -30,6 +30,13 @@ variable "region" {
 }
 
 
+variable "private_domain"{
+    description                         = "Domain for private DNS servers"
+    type                                = string
+    default                             = "bah-automation-library.com"
+}
+
+
 variable "production" {
     description                         = "Enable production deployment"
     type                                = bool

@@ -3,26 +3,22 @@ output "rds-endpoint" {
 }
 
 
-output "elastic-ip" {
-    value                                               = module.cluster.elastic-ip
-}
-
-
-output "elastic-dns" {
-    value                                               = module.cluster.elastic-dns
-}
-
-
 output "bastion-ip" {
     value                                               = module.cluster.bastion-ip
 }
 
 
-output "bastion-dns" {
-    value                                               = module.cluster.bastion-dns
+output "cluster-ip" {
+    value                                               = module.cluster.cluster-ip
+}
+
+
+output "kube-api-endpoint"{
+    value                                               = module.cluster.endpoint
 }
 
 
 output "kubeconfig-certificate-authority-data" {
     value                                               = module.cluster.kubeconfig-certificate-authority-data
 }
+

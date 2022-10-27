@@ -1,10 +1,10 @@
-output "elastic-ip" {
+output "bastion-ip" {
     value                                               = aws_eip.bastion_ip.public_ip
 }
 
 
-output "elastic-dns" {
-    value                                               = aws_eip.bastion_ip.public_dns
+output "cluster-ip" {
+    value                                               = aws_eip.cluster_ip.public_ip
 }
 
 
@@ -15,16 +15,6 @@ output "endpoint" {
 
 output "cluster-sg" {
     value                                               = aws_eks_cluster.automation_library_cluster.vpc_config[0].cluster_security_group_id
-}
-
-
-output "bastion-ip" {
-    value                                               = aws_instance.automation_library_bastion_host.public_ip
-}
-
-
-output "bastion-dns"{
-    value                                               = aws_instance.automation_library_bastion_host.public_dns
 }
 
 
