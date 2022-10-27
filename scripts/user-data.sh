@@ -4,7 +4,9 @@
 apt update -y
 apt install -y \
     ubuntu-desktop \
-    xrdp
+    xrdp \
+    xfce4 \
+    xfce4-session
 apt-get update -y
 apt-get install -y \
     apt-transport-https
@@ -41,6 +43,13 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 unzip awscliv2.zip
 ./aws/install
 
+### xRDP CONFIGURATION
+# open RDP port
+ufw allow 3389/tcp
+# set default GUI
+echo xfce4-session >~/.xsession
+sudo sed -i.bak '/fi/a #xrdp multiple users configuration \n xfce-session \n' /etc/xrdp/startwm.sh
+service xrdp restart
 
 ## CONFIGURATION
 ### 1. Add EKS Cluster to kubeconfig
