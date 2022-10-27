@@ -1,15 +1,5 @@
-resource "aws_eip" "cluster_ip" {
-    vpc                                                 = true
-    tags                                                = {
-                                                            Organization    = "AutomationLibrary"
-                                                            Team            = "BrightLabs"
-                                                            Service         = "ec2"
-                                                        }
-}
-
-
 resource "aws_route53_zone" "private_zone" {
-  name                                                  = "automation-library-cluster.com"
+  name                                                  = "automation-library.com"
 
   vpc {
     vpc_id                                              = var.vpc_config.id
@@ -17,13 +7,24 @@ resource "aws_route53_zone" "private_zone" {
 }
 
 
-resource "aws_route53_record" "cluster_a_record" {
+resource "aws_route53_record" "bastion_private_record" {
   zone_id                                               = aws_route53_zone.private_zone.zone_id
-  name                                                  = "automation-library-cluster.com"
+  name                                                  = "bastion.automation-library.com"
   type                                                  = "A"
   ttl                                                   = 300
   records                                               = [
-                                                            aws_eip.cluster_ip.public_ip
+                                                            aws_eip.bastion_ip.public_ip
+                                                        ]
+}
+
+
+resource "aws_route53_record" "bastion_public_record" {
+  zone_id                                               = data.aws_route53_zone.public_domain.zone_id
+  name                                                  = "bastion.${data.aws_route53_zone.public_domain.name}"
+  type                                                  = "A"
+  ttl                                                   = "300"
+  records                                               = [
+                                                            aws_eip.bastion_ip.public_ip
                                                         ]
 }
 
@@ -39,7 +40,7 @@ resource "aws_kms_key" "cluster_key" {
 
 
 resource "aws_security_group" "remote_access_sg" {
-    name                                                = "al-cluster-remote-access-sg"
+    name                                                = "automation-library-remote-access-sg"
     description                                         = "Bastion host security group"
     vpc_id                                              = var.vpc_config.id
     tags                                                = {
@@ -51,7 +52,7 @@ resource "aws_security_group" "remote_access_sg" {
 
 
 resource "aws_security_group_rule" "control_plane_ingress" {
-    description                                         = "Allow incoming traffic from al-cluster-remote-access-sg to access cluster."
+    description                                         = "Allow incoming traffic from automation-library-remote-access-sg to access cluster."
     type                                                = "ingress"
     from_port                                           = 0
     to_port                                             = 0
@@ -78,7 +79,7 @@ resource "aws_security_group_rule" "remote_access_ingress" {
 
 
 resource "aws_security_group_rule" "remote_access_egress" {
-    description                                         = "Allow outgoing traffic"
+    description                                         = "Allow all outgoing traffic"
     type                                                = "egress"
     from_port                                           = 0
     to_port                                             = 0
@@ -87,6 +88,23 @@ resource "aws_security_group_rule" "remote_access_egress" {
                                                             "0.0.0.0/0"
                                                         ]
     security_group_id                                   = aws_security_group.remote_access_sg.id
+}
+
+
+resource "aws_eip" "bastion_ip" {
+    vpc                                                 = true
+    tags                                                = {
+                                                            Organization    = "AutomationLibrary"
+                                                            Team            = "BrightLabs"
+                                                            Service         = "ec2"
+                                                        }
+}
+
+
+
+resource "aws_eip_association" "eip_assoc" {
+  instance_id                                            = aws_instance.automation_library_bastion_host.id
+  allocation_id                                          = aws_eip.bastion_ip.id
 }
 
 
@@ -104,7 +122,7 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                         ]
     subnet_id                                           = var.vpc_config.public_subnet_ids[0]
     tags                                                = {
-                                                            Name = "al-bastion-host"
+                                                            Name = "automation-library-bastion-host"
                                                             Team = "BrightLabs"
                                                             Organization = "AutomationLibrary"
                                                             Service = "ec2"
