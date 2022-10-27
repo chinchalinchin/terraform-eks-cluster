@@ -5,7 +5,8 @@
 
 # These variables are safe to commit...
 production                  = false
-ssh_key                     = "al_cluster_key"
+region                      = "us-east-1"
+ssh_key                     = "automation_library_key"
 iam_config = {
     cluster_role_name       = "AWSRoleForEKS"
     node_role_name          = "AmazonEKSNodeRole"

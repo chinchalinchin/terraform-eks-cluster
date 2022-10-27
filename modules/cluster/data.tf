@@ -7,8 +7,8 @@ data "aws_vpc" "cluster_vpc" {
 
 
 data "aws_route53_zone" "public_domain" {
-  name         = "bahmulticloud.com"
-  private_zone = false
+  name                                                  = "bahmulticloud.com"
+  private_zone                                          = false
 }
 
 

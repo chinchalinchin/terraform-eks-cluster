@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# NOTE: This script is used to initialize the EC2 Bastion Host that is deployed into the public subnets
-#       of the VPC where the EKS cluster is running. 
-
 ## SYSTEM DEPENDENCIES
+apt update -y
+apt install -y \
+    ubuntu-desktop \
+    xrdp
 apt-get update -y
 apt-get install -y \
     apt-transport-https
@@ -44,5 +45,5 @@ unzip awscliv2.zip
 ## CONFIGURATION
 ### 1. Add EKS Cluster to kubeconfig
 aws eks update-kubeconfig \
-  --region $AWS_DEFAULT_REGION \
-  --name $EKS_CLUSTER_NAME
+  --region ${aws_default_region} \
+  --name ${eks_cluster_name}

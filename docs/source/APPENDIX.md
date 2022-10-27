@@ -18,6 +18,7 @@
 - [Cluster Endpoint Access](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html)
 - [Storage Classes](https://docs.aws.amazon.com/eks/latest/userguide/storage-classes.html)
 - [EBS Container Storage Interface Plugin](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+- [Deploy Kubernetes Dashboard](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html)
 ### Route53
 - [Private Hosted Zones](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html)
 - [VPC DNS: Private Hosted Zones](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-private-hosted-zones)
@@ -39,6 +40,9 @@
 - [Volume: AWS EBS Configuration](https://kubernetes.io/docs/concepts/storage/volumes/#aws-ebs-configuration-example)
 - [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
 ## Terraform Documentation
+- [templatefile](https://developer.hashicorp.com/terraform/language/functions/templatefile?_ga=2.99173854.1785487831.1666788577-898671805.1663783219)
+### AWS Provider
+- [assume_role](https://support.hashicorp.com/hc/en-us/articles/360041289933-Using-AWS-AssumeRole-with-the-AWS-Terraform-Provider)
 ### EKS
 - [eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 - [eks_node_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)

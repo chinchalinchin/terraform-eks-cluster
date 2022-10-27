@@ -1,6 +1,7 @@
 module "cluster" {
     source                                  = "./modules/cluster"
 
+    region                                  = var.region
     source_ips                              = var.source_ips
     vpc_config                              = var.vpc_config
     production                              = var.production

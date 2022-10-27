@@ -8,7 +8,7 @@ resource "aws_kms_key" "rds_key" {
 }
 
 
-resource "random_password" "gitlab_rds_password" {
+resource "random_password" "gitlab_rds_password_ver1" {
   length                                                = 20
   special                                               = true
   numeric                                               = true
@@ -17,16 +17,23 @@ resource "random_password" "gitlab_rds_password" {
 }
 
 
+resource "random_string" "random_id_ver1" {
+    length                                              = 6
+    special                                             = false
+    override_special                                    = "!#$%&*()-_=+[]{}<>:?"
+}
+
+
 resource "aws_secretsmanager_secret" "gitlab_rds_password_secret"{
     description                                         = "Password for Gitlab RDS superuser"
     kms_key_id                                          = aws_kms_key.rds_key.id
-    name                                                = "automation-library-gitlab-rds-password"
+    name                                                = "automation-library-gitlab-rds-password-${random_string.random_id_ver1.result}"
 }
 
 
 resource "aws_secretsmanager_secret_version" "gitlab_rds_password_secret_version" {
     secret_id                                           = aws_secretsmanager_secret.gitlab_rds_password_secret.id
-    secret_string                                       = random_password.gitlab_rds_password.result
+    secret_string                                       = random_password.gitlab_rds_password_ver1.result
 }
 
 
@@ -49,7 +56,7 @@ resource "aws_security_group" "database_sg" {
     tags                                                = {
                                                             Organization    = "AutomationLibrary"
                                                             Team            = "BrightLabs"
-                                                            Service         = "eks"
+                                                            Service         = "rds"
                                                         }
 }
 
@@ -80,9 +87,10 @@ resource "aws_db_instance" "gitlab_rds" {
     engine                                              = "postgres"
     engine_version                                      = "13.7"
     kms_key_id                                          = aws_kms_key.rds_key.arn
+    identifier                                          = "automation-library-gitlab-postgres"
     instance_class                                      = "db.t3.medium"
     username                                            = "gitlab"
-    password                                            = random_password.gitlab_rds_password.result
+    password                                            = random_password.gitlab_rds_password_ver1.result
     performance_insights_enabled                        = true
     performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn
     port                                                = 5432

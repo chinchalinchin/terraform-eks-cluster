@@ -25,11 +25,13 @@ The values prefixed by **TF_VAR_** are passed into **Terraform** through the [TF
 
 ## Remote Access
 
-The **EKS** cluster is deployed into private subnets within the VPC without a public endpoint, therefore it is not publicly accessible. An **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running if ther **Terraform** variable `production` is set to `true`; This will allow the cluster admin to SSH access to the cluster. 
+The **EKS** cluster is deployed into private subnets within the VPC without a public endpoint, therefore it is not publicly accessible. In order to communicate with the cluster, an **EC2** bastion host gets deployed into a public subnet within the VPC where the **EKS** cluster is running; This will allow the cluster admin to SSH into the bastion host to manage the cluster.
 
-The bastion host instance has a role attached to it through its [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) that allows it to make authenticated API calls to the cluster, allowing commands like `kubectl` and `helm` to be run against the cluster. In order to do so, you will need to remote into the aforementioned **EC2** bastion host that gets deployed as part of the module. In order to secure access to the **EC2**, the procedures below detail how to setup the key-pair in the **EC2** key ring and then use that key to SSH into it. In addition, this key is used for SSH access to the pods as well. 
+The bastion host instance has a role attached to it through its [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) that allows it to make authenticated API calls to the cluster, allowing commands like `kubectl` and `helm` to be run against the cluster. 
 
-**NOTE**: If `production` is set to `false`, the bastion host is _not_ deployed; instead public access is enabled to the **EKS k8s**  API. In this case, you must ensure `source_ips` includes any IPs that will need access to the API, as all traffic to the cluster from outside of the VPC is restricted to this whitelist.
+You will need to remote into the bastion host that gets deployed as part of the module in order to manage the cluster, if `production` is set to `true`. The next few sections detail how to setup an SSH key prior to deploying the **Terraform** modules.
+
+**NOTE**: If `production` is set to `false`, then SSH'ing into the bastion host is not neccessary, as public access is enabled to the **EKS k8s**  API in development mode. However, the bastion host still sits behind a security group with stringent ingress conditions. In this case, you must ensure `source_ips` includes any IPs that will need access to the API, as all traffic to the cluster from outside of the VPC is restricted to this whitelist.
 
 ### Generate SSH Key Pair
 
@@ -129,6 +131,15 @@ aws eks update-kubeconfig \
   --name automation-library-cluster
 ```
 
+### Deploy Kubernetes Metric Server
+
+This is needed for the [Kubernetes EKS Dashboard](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html). If you do not intend to use this feature, you do not need to install the **Metrics Server**. See [documentation](https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html) for more information.
+
+```shell
+kubectl apply \
+  -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
 ### PostgreSQL Password Secret
 
 As this repository is meant to support the infrastructure for a **GitLab** deployment, the **Terraform** module deploys a **PostgreSQL** relational database service, along with all of the secondary resources necessary to support its functioning. Of interest in this section is the **SecretsManager** secret for the **Postgres RDS** that is provisioned, as this secret will need passed into a **Kubernetee** secret. After **Terraform** deploys the modules, you can grab the secret from the **SecretsManager** (you may need to adjust your **IAM** policy to allow you to retrieve the secret) and then pass it into **k8s** with the following command,
@@ -139,8 +150,6 @@ kubectl create secret generic automation-library-gitlab-postgresql-password \
     --from-literal=postgresql-postgres-password=<secret-password>
 ```
 
-`<helm-release-name>` corresponds to the name assigned to the **Helm** release when **GitLab** was installed from its chart. 
-
 **TODO**: Create API yaml for this secret.
 
 ### Gitlab Runner Secret
@@ -148,16 +157,20 @@ kubectl create secret generic automation-library-gitlab-postgresql-password \
 Grab a registration token from the **Gitlab** UI and store it in a **Kubernetes** secret; update the _k8s/gitlab-runner-secret.yml_ and then post it to the cluster. See [documentation](https://docs.gitlab.com/runner/register/) for more information.
 
 ```shell
-kubectl apply -f ./k8s/gitlab-runner-secret.yml
+kubectl apply \
+  -f ./k8s/gitlab-runner-secret.yml
 ```
 
 ## Gitlab Setup
 
 ```shell
+export CERTIFICATE_ARN="arn goes here"
+export DOMAIN_NAME="domain goes here"
+export RDS_HOST="rds host goes here"
 helm install \
   automation-library-gitlab gitlab/gitlab \
     --set nginx-ingress.controller.service.annotations="service.beta.kubernetes.io/aws-load-balancer-ssl-cert: $CERTIFICATE_ARN" \
-    --set global.hosts.externalIP="$ELASTIC_IP" \
+    --set global.hosts.domain="$DOMAIN_NAME" \
     --set postgresql.install="false" \
     --set global.psql.host="$RDS_HOST" \
     --set global.psql.password.secret="automation-library-gitlab-postgresql-password" \
@@ -172,6 +185,8 @@ Alternatively, a _values.yml_ can be found in the _helm/gitlab_ directory.
 ## Gitlab Runner Setup
 
 ```shell
+export K8S_NAMESPACE="namespace goes here"
+export GITLAB_URL="url goes here"
 helm install \
   --namespace $K8S_NAMESPACE \
   automation-library-gitlab-runner gitlab/gitlab-runner \
