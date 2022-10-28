@@ -1,18 +1,29 @@
 global:
   hosts:
-    externalIP: <elastic-ip-goes-here>
-    domain: <domain-goes-here>
+    domain: <domain>
   psql:
-    host: <rds-endpoint-goes-here>
+    host: <rds-host>
     password:
       secret: automation-library-gitlab-postgresql-password
     port: 5432
     database: gitlabhq_production
     username: gitlab
   ingress:
-    # Disable TLS termination on Ingress objects, by NGINX
+    # Disable cert-manager to use self-signed certificates for the backend
+    configureCertmanager: false
+    # Enable TLS termination on Ingress objects, by NGINX to use self-signed certificates 
     tls:
-      enabled: false
+      enabled: true
+
+certmanager-issuer:
+  email: "<signer-email>"
+
+certmanager:
+  install: false
+
+gitlab-runner:
+  install: false
+  
 # see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-layer7-loadbalancer.yaml
 nginx-ingress:
   controller:
@@ -22,15 +33,12 @@ nginx-ingress:
     service:
       annotations:
         # Layer 7, injects X-Forwarded-* headers
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
         # Configure ACM certifiates
-        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <cert arn goes here>
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:<region>:<account-id>:certificate/<certificate-id>
         # Configure which ports are to terminate SSL.
         service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
-      targetPorts:
-        https: http # the ELB will send HTTP to 443
-
 
 postgresql:
   install: false
