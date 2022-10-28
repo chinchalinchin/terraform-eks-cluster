@@ -10,6 +10,7 @@
 **/.venv
 **/*.lock.info
 **/*.env
+**/values.yml
 !**/*.sample.env
 objects.inv
 notes
