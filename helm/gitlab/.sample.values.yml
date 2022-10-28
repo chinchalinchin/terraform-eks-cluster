@@ -1,6 +1,26 @@
 global:
   hosts:
-    domain: <domain>
+    domain: bahmulticloud.com
+    # hostSuffix: staging
+    # https: false
+    # externalIP: <ip>
+    # gitlab:
+    #   name: gitlab.bahmulticloud.com
+    #   https: false
+    # registry:
+    #   name: registry.bahmulticloud.com
+    #   https: false
+    # minio:
+    #   name: minio.bahmulticloud.com
+    #   https: false
+    # smartcard:
+    #   name: smartcard.bahmulticloud.com
+    # kas:
+    #   name: kas.bahmulticloud.com
+    # pages:
+    #   name: pages.bahmulticloud.com
+    #   https: false
+    # ssh: gitlab.bahmulticloud.com
   psql:
     host: <rds-host>
     password:
@@ -8,37 +28,81 @@ global:
     port: 5432
     database: gitlabhq_production
     username: gitlab
-  ingress:
-    # Disable cert-manager to use self-signed certificates for the backend
-    configureCertmanager: false
-    # Enable TLS termination on Ingress objects, by NGINX to use self-signed certificates 
-    tls:
-      enabled: true
+  # ingress:
+  #   configureCertmanager: false
+  #   tls:
+  #     enabled: false
 
 certmanager-issuer:
-  email: "<signer-email>"
-
-certmanager:
-  install: false
+  email: "625518@bah.com"
 
 gitlab-runner:
   install: false
-  
-# see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-layer7-loadbalancer.yaml
-nginx-ingress:
-  controller:
-    config:
-      # pass the X-Forwarded-* headers directly from the upstream
-      use-forwarded-headers: "true"
-    service:
-      annotations:
-        # Layer 7, injects X-Forwarded-* headers
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
-        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
-        # Configure ACM certifiates
-        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:<region>:<account-id>:certificate/<certificate-id>
-        # Configure which ports are to terminate SSL.
-        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
 
 postgresql:
   install: false
+
+### ELB OSI LAYER 7 CONFIGURATION
+## see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-layer7-loadbalancer.yaml
+## NOTE: load-balancer terminates ssl and forwards unencrypted traffic to nodes
+
+# global:
+#   ingress:
+#     tls:
+#       enabled: false
+
+# nginx-ingress:
+#   controller:
+#     config:
+#       use-forwarded-headers: "true"
+#     service:
+#       annotations:
+#         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+#         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+#         service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <cert-arn>
+#         service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+#       targetPorts:
+#         https: http
+
+### ELB OSI LAYER 7 - LAYER 4 CONFIGURATION
+## see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-mixed-mode.yml
+## NOTE: load-balancer terminates ssl and then re-encrypts before forwarding to nodes for second decryption.
+## NOTE: MOST SECURE
+
+# global:
+#   ingress:
+#     configureCertmanager: false
+#     tls:
+#       enabled: true
+
+# nginx-ingress:
+#   controller:
+#     config:
+#       # pass the X-Forwarded-* headers directly from the upstream
+#       use-forwarded-headers: "true" 
+#     service:
+#       annotations:
+#         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+#         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+#         service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <cert-arn>
+#         service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+
+
+### ELB OSI LAYER 4 CONFIGURATION
+## see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-layer4-loadbalancer.yaml
+## NOTE: nodes terminate ssl
+
+# global:
+#   shell:
+#     tcp:
+#       proxyProtocol: true
+
+# nginx-ingress:
+#   controller:
+#     service:
+#       annotations:
+#         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+#         service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+#     config:
+#       proxy-real-ip-cidr: <vpc-cidr-block>
+#       use-proxy-protocol: "true"      
