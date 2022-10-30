@@ -14,13 +14,14 @@ resource "random_password" "rds_password" {
   numeric                                               = true
   upper                                                 = true
   lower                                                 = true
+  override_special                                      = local.special_chars
 }
 
 
 resource "random_string" "random_id" {
     length                                              = 6
     special                                             = false
-    override_special                                    = "!#$%&*()-_=+[]{}<>:?"
+    override_special                                    = local.special_chars
 }
 
 
@@ -82,6 +83,7 @@ resource "aws_db_instance" "rds" {
     identifier                                          = local.rds_name
     instance_class                                      = local.rds_size
     monitoring_role_arn                                 = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.rds_monitor_role_name}"
+    monitoring_interval                                 = local.rds_monitor_interval
     password                                            = random_password.rds_password.result
     performance_insights_enabled                        = true
     performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn

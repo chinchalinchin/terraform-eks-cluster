@@ -7,7 +7,7 @@ locals {
                                     "10.1.10.0/24",
                                     "10.1.20.0/24"
                                 ]
-    availability_zones          = [ "a", "b" ]
+    availability_zones          = [ "b", "c", "d", "e", "f", "a"]
     vpc_cidr                    = "10.1.0.0/16"
     vpc_tags                    = {
                                     Organization    = "AutomationLibrary"

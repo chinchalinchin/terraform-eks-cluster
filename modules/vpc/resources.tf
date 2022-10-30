@@ -10,7 +10,7 @@ resource "aws_vpc" "automation_library_vpc" {
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
-                                                    
+                                                        "Name"                                      = "automation-library-vpc"
                                                         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
                                                     }
                                                 )
@@ -18,16 +18,26 @@ resource "aws_vpc" "automation_library_vpc" {
 
 
 resource "aws_internet_gateway" "automation_library_internet_gateway" {
-    tags                                        = local.vpc_tags
+    tags                                        = merge(
+                                                    local.vpc_tags,
+                                                    {
+                                                        "Name"                                      = "automation-library-internet-gateway"
+                                                    }
+                                                )
     vpc_id                                      = aws_vpc.automation_library_vpc.id
 }
 
 
 resource "aws_eip" "nat_ip" {
-    count                                               = 2
+    count                                        = 2
 
-    tags                                                = local.vpc_tags
-    vpc                                                 = true
+    tags                                        = merge(
+                                                    local.vpc_tags,
+                                                    {
+                                                        "Name"                                  = "automation-library-nat-ip-${count.index}"
+                                                    }
+                                                )
+    vpc                                         = true
 }
 
 
@@ -37,8 +47,13 @@ resource "aws_nat_gateway" "automation_library_nat_gateway" {
                                                     aws_internet_gateway.automation_library_internet_gateway
                                                 ]
     allocation_id                               = aws_eip.nat_ip.*.id[count.index]
-    subnet_id                                   = aws_subnet.automation_library_private_subnet.*.id[count.index]
-    tags                                        = local.vpc_tags
+    subnet_id                                   = aws_subnet.automation_library_public_subnet[count.index].id
+    tags                                        = merge(
+                                                            local.vpc_tags,
+                                                            {
+                                                                "Name"                                  = "automation-library-nat-gateway-${count.index}"
+                                                            }
+                                                        )
 
 }
 
@@ -47,11 +62,12 @@ resource "aws_nat_gateway" "automation_library_nat_gateway" {
 resource "aws_subnet" "automation_library_private_subnet" {
     count                                       = 2
 
-    availability_zone                           = local.availability_zones[count.index]
+    availability_zone                           = "${var.region}${local.availability_zones[count.index]}"
     cidr_block                                  = local.private_subnet_cidrs[count.index]
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
+                                                        "Name"                            = "automation-library-private-subnet-${count.index}"
                                                         "kubernetes.io/role/internal-elb" = 1
                                                     }
                                                 )
@@ -62,12 +78,13 @@ resource "aws_subnet" "automation_library_private_subnet" {
 resource "aws_subnet"   "automation_library_public_subnet" {
     count                                       = 2
     
-    availability_zone                           = local.availability_zones[count.index]
+    availability_zone                           = "${var.region}${local.availability_zones[count.index]}"
     cidr_block                                  = local.public_subnet_cidrs[count.index]
     map_public_ip_on_launch                     = true
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
+                                                        "Name"                      = "automation-library-public-subnet-${count.index}"
                                                         "kubernetes.io/role/elb"    = 1
                                                     }
                                                 )
@@ -77,7 +94,12 @@ resource "aws_subnet"   "automation_library_public_subnet" {
 
 resource "aws_route_table" "automation_library_public_route_table" {
 
-    tags                                        = local.vpc_tags
+    tags                                        = merge(
+                                                    local.vpc_tags,
+                                                    {
+                                                        "Name"                      = "automation-library-public-route-table"
+                                                    }
+                                                )
     vpc_id                                      = aws_vpc.automation_library_vpc.id
 
     route {
@@ -99,12 +121,17 @@ resource "aws_route_table_association" "automation_library_public_route_table_as
 resource "aws_route_table" "automation_library_private_route_table" {
     count                                       = 2
 
-    tags                                        = local.vpc_tags
+    tags                                        = merge(
+                                                    local.vpc_tags,
+                                                    {
+                                                        "Name"                  = "automation-library-private-route-table-${count.index}"
+                                                    }
+                                                )
     vpc_id                                      = aws_vpc.automation_library_vpc.id
 
     route {
         cidr_block                              = "0.0.0.0/0"
-        gateway_id                              = aws_nat_gateway.automation_library_nat_gateway.*.id[count.index]
+        gateway_id                              = aws_nat_gateway.automation_library_nat_gateway[count.index].id
     }
 }
 

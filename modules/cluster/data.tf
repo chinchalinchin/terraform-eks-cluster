@@ -20,7 +20,7 @@ data "aws_subnets" "cluster_public_subnets" {
 
 data "aws_subnets" "cluster_private_subnets" {
    tags = {
-      "kubernetes.io/role/interal-elb"                  = 1
+      "kubernetes.io/role/internal-elb"                  = 1
       Organization                                      = "AutomationLibrary"
       Team                                              = "BrightLabs"
       Service                                           = "vpc"
