@@ -2,7 +2,7 @@ resource "aws_route53_zone" "private_zone" {
   name                                                  = var.private_domain
 
   vpc {
-    vpc_id                                              = var.vpc_config.id
+    vpc_id                                              = data.aws_vpc.cluster_vpc.id
   }
 
 }
@@ -21,7 +21,7 @@ resource "aws_kms_key" "cluster_key" {
 resource "aws_security_group" "remote_access_sg" {
     name                                                = "automation-library-remote-access-sg"
     description                                         = "Bastion host security group"
-    vpc_id                                              = var.vpc_config.id
+    vpc_id                                              = data.aws_vpc.cluster_vpc.id
     tags                                                = {
                                                             Organization    = "AutomationLibrary"
                                                             Team            = "BrightLabs"
@@ -97,49 +97,43 @@ resource "aws_route53_record" "bastion_public_record" {
 }
 
 resource "aws_instance" "automation_library_bastion_host" {
+    depends_on                                          = [
+                                                            aws_eks_cluster.automation_library_cluster
+                                                        ]
     ami                                                 = var.bastion_config.ami
     associate_public_ip_address                         = true
     key_name                                            = var.ssh_key
     iam_instance_profile                                = var.iam_config.bastion_profile_name
     instance_type                                       = "t3.xlarge"
     user_data                                           = templatefile("${path.root}/scripts/user-data.sh", {
-                                                            eks_cluster_name = aws_eks_cluster.automation_library_cluster.name
+                                                            eks_cluster_name = var.cluster_name
                                                             aws_default_region = var.region
                                                         })
     vpc_security_group_ids                              = [
                                                             aws_security_group.remote_access_sg.id
                                                         ]
-    subnet_id                                           = var.vpc_config.public_subnet_ids[0]
-    tags                                                = {
-                                                            Name = "automation-library-bastion-host"
-                                                            Team = "BrightLabs"
-                                                            Organization = "AutomationLibrary"
-                                                            Service = "ec2"
-                                                        }
+    subnet_id                                           = data.aws_subnets.cluster_public_subnets.ids[0]
+    tags                                                = merge(
+                                                            local.ec2_tags,
+                                                            {
+                                                                Name = "automation-library-bastion-host"
+                                                            }
+                                                        )
 }
 
 
 resource "aws_eip" "cluster_ip" {
     vpc                                                 = true
-    tags                                                = {
-                                                            Organization    = "AutomationLibrary"
-                                                            Team            = "BrightLabs"
-                                                            Service         = "eks"
-                                                        }
+    tags                                                = local.eks_tags
 }
 
 
 resource "aws_eks_cluster" "automation_library_cluster" {
+    enabled_cluster_log_types                           = local.eks_logging
     name                                                = var.cluster_name
     role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.cluster_role_name}"
-    enabled_cluster_log_types                           = [
-                                                            "api", 
-                                                            "audit", 
-                                                            "authenticator", 
-                                                            "controllerManager", 
-                                                            "scheduler"
-                                                        ]
-
+    tags                                                = local.eks_tags
+    
     encryption_config {
         resources                                       = [
                                                             "secrets"
@@ -151,16 +145,16 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
     vpc_config {
-        public_access_cidrs                             = var.source_ips # TODO: turn this off in production
         endpoint_private_access                         = true
         endpoint_public_access                          = true # TODO: turn this to false in production
-        subnet_ids                                      = concat(
-                                                            var.vpc_config.public_subnet_ids,
-                                                            var.vpc_config.private_subnet_ids
-                                                        )
+        public_access_cidrs                             = var.source_ips # TODO: turn this off in production
         security_group_ids                              = [
                                                             aws_security_group.remote_access_sg.id
                                                         ]
+        subnet_ids                                      = concat(
+                                                            data.aws_subnets.cluster_public_subnets.ids,
+                                                            data.aws_subnets.cluster_private_subnets.ids
+                                                        )
     }
 
 }
@@ -174,8 +168,8 @@ resource "aws_eks_node_group" "automation-library-ng" {
                                                         ]
     node_group_name                                     = "automation-library-node-group-${count.index}"
     node_role_arn                                       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.node_role_name}"
-    subnet_ids                                          = var.vpc_config.private_subnet_ids
-
+    subnet_ids                                          = data.aws_subnets.cluster_private_subnets.ids
+    tags                                                = local.eks_tags
     scaling_config {
       desired_size                                      = 2
       max_size                                          = 3

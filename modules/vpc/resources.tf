@@ -68,7 +68,7 @@ resource "aws_subnet"   "automation_library_public_subnet" {
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
-                                                        "kubernetes.io/role/elb" = 1
+                                                        "kubernetes.io/role/elb"    = 1
                                                     }
                                                 )
     vpc_id                                      = aws_vpc.automation_library_vpc.id
