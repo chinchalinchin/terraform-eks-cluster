@@ -8,18 +8,6 @@ variable "source_ips" {
     sensitive                           = true
 }
 
-
-variable "vpc_config" {
-    description                         = "Configuration information for the VPC into which the cluster will deploy"
-    type = object({
-        id = string
-        public_subnet_ids               = list(string)
-        private_subnet_ids              = list(string)
-    })
-    sensitive                           = true
-}
-
-
 #### Defaultable variables
 #### NOTE: These variables are safe to default, since they do not have any 
 ####        any information that must be kept secret.

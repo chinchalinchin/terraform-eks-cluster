@@ -130,7 +130,7 @@ resource "aws_eip" "cluster_ip" {
 
 
 resource "aws_eks_cluster" "automation_library_cluster" {
-    name                                                = "automation-library-cluster"
+    name                                                = var.cluster_name
     role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.cluster_role_name}"
     enabled_cluster_log_types                           = [
                                                             "api", 
@@ -151,9 +151,9 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
     vpc_config {
-        public_access_cidrs                             = var.source_ips
+        public_access_cidrs                             = var.source_ips # TODO: turn this off in production
         endpoint_private_access                         = true
-        endpoint_public_access                          = true
+        endpoint_public_access                          = true # TODO: turn this to false in production
         subnet_ids                                      = concat(
                                                             var.vpc_config.public_subnet_ids,
                                                             var.vpc_config.private_subnet_ids
@@ -164,26 +164,6 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
 }
-
-
-# resource "aws_iam_openid_connect_provider" "cluster_iam_oidc" {
-#   client_id_list                                        = [
-#                                                             "sts.amazonaws.com"
-#                                                         ]
-#   thumbprint_list                                       = data.tls_certificate.cluster_oidc_cert.certificates.*.sha1_fingerprint
-#   url                                                   = data.tls_certificate.cluster_oidc_cert.url
-# }
-
-
-# resource "aws_eks_addon" "ebs_plugin" {
-#     addon_name                                          = "aws-ebs-csi-driver"
-#     addon_version                                       = "v1.11.2-eksbuild.1"
-#     cluster_name                                        = aws_eks_cluster.automation_library_cluster.name
-#     service_account_role_arn                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.ebs_role_name}"
-#     depends_on                                          = [
-#                                                             aws_iam_openid_connect_provider.cluster_iam_oidc
-#                                                         ]
-# }
 
 
 resource "aws_eks_node_group" "automation-library-ng" {
@@ -213,3 +193,26 @@ resource "aws_eks_node_group" "automation-library-ng" {
                                                         ]
     }
 }
+
+
+## Need IAM permission to provision OIDC connector for the following resources...
+## Waiting on AWS certs to transfer to APN account so I can use superuser account...
+
+# resource "aws_iam_openid_connect_provider" "cluster_iam_oidc" {
+#   client_id_list                                        = [
+#                                                             "sts.amazonaws.com"
+#                                                         ]
+#   thumbprint_list                                       = data.tls_certificate.cluster_oidc_cert.certificates.*.sha1_fingerprint
+#   url                                                   = data.tls_certificate.cluster_oidc_cert.url
+# }
+
+
+# resource "aws_eks_addon" "ebs_plugin" {
+#     addon_name                                          = "aws-ebs-csi-driver"
+#     addon_version                                       = "v1.11.2-eksbuild.1"
+#     cluster_name                                        = aws_eks_cluster.automation_library_cluster.name
+#     service_account_role_arn                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.ebs_role_name}"
+#     depends_on                                          = [
+#                                                             aws_iam_openid_connect_provider.cluster_iam_oidc
+#                                                         ]
+# }
