@@ -1,11 +1,11 @@
-# resource "aws_route53_zone" "private_zone" {
-#   name                                                  = var.private_domain
+resource "aws_route53_zone" "private_zone" {
+  name                                                  = var.private_domain
 
-#   vpc {
-#     vpc_id                                              = var.vpc_config.id
-#   }
+  vpc {
+    vpc_id                                              = var.vpc_config.id
+  }
 
-# }
+}
 
 
 resource "aws_kms_key" "cluster_key" {
@@ -99,8 +99,6 @@ resource "aws_route53_record" "bastion_public_record" {
 resource "aws_instance" "automation_library_bastion_host" {
     ami                                                 = var.bastion_config.ami
     associate_public_ip_address                         = true
-    # TODO: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair
-    #       use this to generate key-pair instead of doing it manually and passing in the keyname.
     key_name                                            = var.ssh_key
     iam_instance_profile                                = var.iam_config.bastion_profile_name
     instance_type                                       = "t3.xlarge"
@@ -153,9 +151,9 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     }
 
     vpc_config {
-        public_access_cidrs                             = !var.production ?  var.source_ips : [ "0.0.0.0/0" ]
+        public_access_cidrs                             = var.source_ips
         endpoint_private_access                         = true
-        endpoint_public_access                          = !var.production
+        endpoint_public_access                          = true
         subnet_ids                                      = concat(
                                                             var.vpc_config.public_subnet_ids,
                                                             var.vpc_config.private_subnet_ids

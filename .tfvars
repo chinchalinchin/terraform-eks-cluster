@@ -4,7 +4,9 @@
 # !      SEE: https://www.terraform.io/cli/config/environment-variables
 
 # These variables are safe to commit...
-production                  = false
+cluster_name                = "automation-library-cluster"
+private_domain              = "bah-automation-library.com"
+public_domain               = "bahmulticloud.com"
 region                      = "us-east-1"
 ssh_key                     = "automation_library_key"
 iam_config = {

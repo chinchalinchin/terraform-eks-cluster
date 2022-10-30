@@ -37,10 +37,17 @@ variable "private_domain"{
 }
 
 
-variable "production" {
-    description                         = "Enable production deployment"
-    type                                = bool
-    default                             = false
+variable "public_domain" {
+    description                         = "Domain for public DNS servers"
+    type                                = string
+    default                             = "bahmulticloud.com"
+}
+
+
+variable "cluster_name" {
+    description                         = "Name to assign to the cluster"
+    type                                = string
+    default                             = "automation-library-clsuter"
 }
 
 

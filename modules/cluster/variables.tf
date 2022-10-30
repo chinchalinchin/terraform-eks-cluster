@@ -32,6 +32,13 @@ variable "private_domain"{
 }
 
 
+variable "public_domain" {
+    description                         = "Domain for public DNS servers"
+    type                                = string
+    default                             = "bahmulticloud.com"
+}
+
+
 variable "production" {
     description                         = "Enable production deployment"
     type                                = bool

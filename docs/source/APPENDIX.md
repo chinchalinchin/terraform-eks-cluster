@@ -66,6 +66,7 @@
 - [db_subnet_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group)
 - [security_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
 - [security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)
+- [vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc)
 ### Data Sources
 - [certificate](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate)
 ## Stack Overflow
