@@ -8,13 +8,8 @@ output "bastion-ip" {
 }
 
 
-output "cluster-ip" {
-    value                                               = module.cluster.cluster-ip
-}
-
-
 output "kube-api-endpoint"{
-    value                                               = module.cluster.endpoint
+    value                                               = module.cluster.cluster_endpoint
 }
 
 

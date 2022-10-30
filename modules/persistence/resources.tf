@@ -81,7 +81,7 @@ resource "aws_db_instance" "rds" {
     kms_key_id                                          = aws_kms_key.rds_key.arn
     identifier                                          = local.rds_name
     instance_class                                      = local.rds_size
-    username                                            = local.rds_user
+    monitoring_role_arn                                 = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.rds_monitor_role_name}"
     password                                            = random_password.rds_password.result
     performance_insights_enabled                        = true
     performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn
@@ -91,6 +91,7 @@ resource "aws_db_instance" "rds" {
     storage_encrypted                                   = true
     storage_type                                        = "gp2"
     tags                                                = local.rds_tags
+    username                                            = local.rds_user
     vpc_security_group_ids                              = [
                                                             aws_security_group.database_sg.id
                                                         ]

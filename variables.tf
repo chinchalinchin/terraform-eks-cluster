@@ -11,10 +11,10 @@ variable "source_ips" {
 #### Defaultable variables
 #### NOTE: These variables are safe to default, since they do not have any 
 ####        any information that must be kept secret.
-variable "region" {
-    description                         = "Region where resources are deployed"
-    type                               = string
-    default                             = "us-east-1"
+variable "cluster_name" {
+    description                         = "Name to assign to the cluster"
+    type                                = string
+    default                             = "automation-library-clsuter"
 }
 
 
@@ -32,10 +32,17 @@ variable "public_domain" {
 }
 
 
-variable "cluster_name" {
-    description                         = "Name to assign to the cluster"
-    type                                = string
-    default                             = "automation-library-clsuter"
+variable "production" {
+    description                         = "Enable production deployment"
+    type                                = bool
+    default                             = false
+}
+
+
+variable "region" {
+    description                         = "Region where resources are deployed"
+    type                               = string
+    default                             = "us-east-1"
 }
 
 

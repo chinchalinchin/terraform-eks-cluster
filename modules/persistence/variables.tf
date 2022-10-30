@@ -1,15 +1,10 @@
-# Non-defaultable
-variable "vpc_config" {
-    description                     = "Configuration information for the VPC into which the cluster will deploy"
-    type = object({
-        id = string
-        public_subnet_ids           = list(string)
-        private_subnet_ids          = list(string)
-    })
-    sensitive                       = true
+variable "cluster_name" {
+    description                         = "Name to assign to the cluster"
+    type                                = string
+    default                             = "automation-library-clsuter"
 }
 
-# Defaultable
+
 variable "iam_config" {
     description                     = "IAM configuration for cluster roles and bastion instance profile"
     type = object({

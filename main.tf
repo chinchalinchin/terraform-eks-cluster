@@ -11,6 +11,7 @@ module "cluster" {
     iam_config                              = var.iam_config
     public_domain                           = var.public_domain
     private_domain                          = var.private_domain
+    production                              = var.production
     region                                  = var.region
     source_ips                              = var.source_ips
     ssh_key                                 = var.ssh_key
@@ -23,6 +24,7 @@ module "persistence" {
                                             ]
     source                                  = "./modules/persistence"
 
+    cluster_name                            = var.cluster_name             
     iam_config                              = var.iam_config
 }
 

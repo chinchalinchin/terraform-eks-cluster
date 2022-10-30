@@ -146,8 +146,8 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 
     vpc_config {
         endpoint_private_access                         = true
-        endpoint_public_access                          = true # TODO: turn this to false in production
-        public_access_cidrs                             = var.source_ips # TODO: turn this off in production
+        endpoint_public_access                          = !var.production
+        public_access_cidrs                             = var.production ? local.default_access_cidr : var.source_ips 
         security_group_ids                              = [
                                                             aws_security_group.remote_access_sg.id
                                                         ]

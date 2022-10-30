@@ -8,10 +8,10 @@ variable "source_ips" {
 }
 
 #### Defaultable variables
-variable "region" {
-    description                         = "Region where resources are deployed"
+variable "cluster_name" {
+    description                         = "Name to assign to the cluster"
     type                                = string
-    default                             = "us-east-1"
+    default                             = "automation-library-clsuter"
 }
 
 
@@ -35,11 +35,20 @@ variable "production" {
     default                             = false
 }
 
+
+variable "region" {
+    description                         = "Region where resources are deployed"
+    type                               = string
+    default                             = "us-east-1"
+}
+
+
 variable "ssh_key" {
     description                         = "Name of the public SSH key in the EC2 keyring. NOTE: this key must exist in the keyring before launching this Terraform moduel. Refer to QUICKSTART documentation for more information."
     type                                = string
-    default                             = "automation_library_key"
+    default                             = "al_cluster_key"
 }
+
 
 variable "iam_config" {
     description                         = "IAM configuration for cluster roles and bastion instance profile"

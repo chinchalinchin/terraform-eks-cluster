@@ -7,6 +7,7 @@ Welcome to your-project's documentation!
 
    OVERVIEW
    QUICKSTART
+   MODULE_VPC
    MODULE_CLUSTER
    MODULE_PERSISTENCE
    CONFIGURATION

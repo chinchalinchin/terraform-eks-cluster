@@ -26,7 +26,7 @@ resource "aws_internet_gateway" "automation_library_internet_gateway" {
 resource "aws_eip" "nat_ip" {
     count                                               = 2
 
-    tags                                                = locals.vpc_tags
+    tags                                                = local.vpc_tags
     vpc                                                 = true
 }
 
@@ -36,8 +36,8 @@ resource "aws_nat_gateway" "automation_library_nat_gateway" {
     depends_on                                  = [
                                                     aws_internet_gateway.automation_library_internet_gateway
                                                 ]
-    allocation_id                               = aws_eip.nat_ip[count.index]
-    subnet_id                                   = aws_subnet.automation_library_private_subnet[count.index]
+    allocation_id                               = aws_eip.nat_ip.*.id[count.index]
+    subnet_id                                   = aws_subnet.automation_library_private_subnet.*.id[count.index]
     tags                                        = local.vpc_tags
 
 }
@@ -104,7 +104,7 @@ resource "aws_route_table" "automation_library_private_route_table" {
 
     route {
         cidr_block                              = "0.0.0.0/0"
-        gateway_id                              = aws_nat_gateway.automation_library_nat_gateway[count.index]
+        gateway_id                              = aws_nat_gateway.automation_library_nat_gateway.*.id[count.index]
     }
 }
 

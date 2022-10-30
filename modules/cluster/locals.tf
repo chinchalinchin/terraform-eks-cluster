@@ -1,4 +1,7 @@
 locals {
+    default_access_cidr                                 = [ 
+                                                            "0.0.0.0/0" 
+                                                        ]
     ec2_tags                                            = {
                                                             Organization    = "AutomationLibrary"
                                                             Team            = "BrightLabs"

@@ -5,6 +5,7 @@
 
 # These variables are safe to commit...
 cluster_name                = "automation-library-cluster"
+production                  = false
 private_domain              = "bah-automation-library.com"
 public_domain               = "bahmulticloud.com"
 region                      = "us-east-1"
