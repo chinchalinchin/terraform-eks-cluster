@@ -19,7 +19,7 @@ iam_config = {
 }
 eks_config  = {
     node_count              = 2
-    instance_type           = "m5.xlarge"
+    instance_type           = "m5.2xlarge"
 }
 bastion_config = {
     ami                     = "ami-0b0ea68c435eb488d"

@@ -29,12 +29,12 @@ resource "aws_internet_gateway" "automation_library_internet_gateway" {
 
 
 resource "aws_eip" "nat_ip" {
-    count                                        = 2
+    for_each                                    = toset(local.availability_zones)
 
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
-                                                        "Name"                                  = "automation-library-nat-ip-${count.index}"
+                                                        "Name"                                  = "automation-library-nat-ip-${each.key}"
                                                     }
                                                 )
     vpc                                         = true
@@ -42,32 +42,56 @@ resource "aws_eip" "nat_ip" {
 
 
 resource "aws_nat_gateway" "automation_library_nat_gateway" {
-    count                                       = 2
+    for_each                                    = toset(local.availability_zones)
+
     depends_on                                  = [
                                                     aws_internet_gateway.automation_library_internet_gateway
                                                 ]
-    allocation_id                               = aws_eip.nat_ip.*.id[count.index]
-    subnet_id                                   = aws_subnet.automation_library_public_subnet[count.index].id
+    allocation_id                               = aws_eip.nat_ip.*.id[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ]
+    subnet_id                                   = aws_subnet.automation_library_public_subnet[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ].id
     tags                                        = merge(
-                                                            local.vpc_tags,
-                                                            {
-                                                                "Name"                                  = "automation-library-nat-gateway-${count.index}"
-                                                            }
-                                                        )
+                                                    local.vpc_tags,
+                                                    {
+                                                        "Name"                                  = "automation-library-nat-gateway-${count.index}"
+                                                    }
+                                                )
 
 }
 
 
 # see: https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html#network-requirements-subnets
 resource "aws_subnet" "automation_library_private_subnet" {
-    count                                       = 2
+    for_each                                    = toset(local.availability_zones)
 
-    availability_zone                           = "${var.region}${local.availability_zones[count.index]}"
-    cidr_block                                  = local.private_subnet_cidrs[count.index]
+    availability_zone                           = format("%s%s",
+                                                    var.region,
+                                                    local.availability_zones[
+                                                        index(
+                                                            toset(local.availability_zones), 
+                                                            each.value
+                                                        )
+                                                    ]
+                                                )
+    cidr_block                                  = local.private_subnet_cidrs[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ]
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
-                                                        "Name"                            = "automation-library-private-subnet-${count.index}"
+                                                        "Name"                            = "automation-library-private-subnet-${each.value}"
                                                         "kubernetes.io/role/internal-elb" = 1
                                                     }
                                                 )
@@ -76,15 +100,30 @@ resource "aws_subnet" "automation_library_private_subnet" {
 
 # see: https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html#network-requirements-subnets
 resource "aws_subnet"   "automation_library_public_subnet" {
-    count                                       = 2
+    for_each                                    = toset(local.availability_zones)
     
-    availability_zone                           = "${var.region}${local.availability_zones[count.index]}"
-    cidr_block                                  = local.public_subnet_cidrs[count.index]
+    availability_zone                           = format("%s%s",
+                                                    var.region,
+                                                    local.availability_zones[
+                                                        index(
+                                                            toset(local.availability_zones), 
+                                                            each.value
+                                                        )
+                                                    ]
+                                                )
+    
+
+    cidr_block                                  = local.public_subnet_cidrs[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ]
     map_public_ip_on_launch                     = true
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
-                                                        "Name"                      = "automation-library-public-subnet-${count.index}"
+                                                        "Name"                      = "automation-library-public-subnet-${each.key}"
                                                         "kubernetes.io/role/elb"    = 1
                                                     }
                                                 )
@@ -93,7 +132,6 @@ resource "aws_subnet"   "automation_library_public_subnet" {
 
 
 resource "aws_route_table" "automation_library_public_route_table" {
-
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
@@ -111,33 +149,53 @@ resource "aws_route_table" "automation_library_public_route_table" {
 
 
 resource "aws_route_table_association" "automation_library_public_route_table_association" {
-    count                                       = 2
+    for_each                                    = toset(local.availability_zones)
 
-    subnet_id                                   = aws_subnet.automation_library_public_subnet[count.index].id
+    subnet_id                                   = aws_subnet.automation_library_public_subnet[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ].id
     route_table_id                              = aws_route_table.automation_library_public_route_table.id
 }
 
 
 resource "aws_route_table" "automation_library_private_route_table" {
-    count                                       = 2
+    for_each                                    = toset(local.availability_zones)
 
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
-                                                        "Name"                  = "automation-library-private-route-table-${count.index}"
+                                                        "Name"                  = "automation-library-private-route-table-${each.key}"
                                                     }
                                                 )
     vpc_id                                      = aws_vpc.automation_library_vpc.id
 
     route {
         cidr_block                              = "0.0.0.0/0"
-        gateway_id                              = aws_nat_gateway.automation_library_nat_gateway[count.index].id
+        gateway_id                              = aws_nat_gateway.automation_library_nat_gateway[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ].id
     }
 }
 
 
 resource "aws_route_table_association" "automation_library_private_route_table_association" {
-    count                                       = 2
-    subnet_id                                   = aws_subnet.automation_library_private_subnet[count.index].id
-    route_table_id                              = aws_route_table.automation_library_private_route_table[count.index].id
+    for_each                                    = toset(local.availability_zones)
+    subnet_id                                   = aws_subnet.automation_library_private_subnet[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ].id
+    route_table_id                              = aws_route_table.automation_library_private_route_table[
+                                                    index(
+                                                        toset(local.availability_zones), 
+                                                        each.value
+                                                    )
+                                                ].id
 }

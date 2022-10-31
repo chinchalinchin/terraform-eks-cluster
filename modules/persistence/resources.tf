@@ -98,3 +98,13 @@ resource "aws_db_instance" "rds" {
                                                             aws_security_group.database_sg.id
                                                         ]
 }
+
+
+resource "aws_ebs_volume" "example" {
+  availability_zone = "us-west-2a"
+  size              = 40
+
+  tags = {
+    Name = "HelloWorld"
+  }
+}

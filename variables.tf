@@ -79,7 +79,7 @@ variable "eks_config" {
     })
     default = {
         node_count                      = 2
-        instance_type                   = "m5.xlarge"
+        instance_type                   = "m5.2xlarge"
     }
 }
 

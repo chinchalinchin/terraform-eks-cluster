@@ -133,6 +133,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
     name                                                = var.cluster_name
     role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.cluster_role_name}"
     tags                                                = local.eks_tags
+    version                                             = local.k8s_version
     
     encryption_config {
         resources                                       = [

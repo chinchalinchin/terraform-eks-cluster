@@ -1,0 +1,13 @@
+# see: https://gitlab.com/gitlab-org/charts/gitlab/blob/master/examples/storage/eks_pv_example.yml
+kind: PersistentVolume
+metadata:
+  name: persistent-volume-az-c
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 10
+  storageClassName: gp2
+  awsElasticBlockStore:
+    fsType: ext4
+    volumeID: vol-al-gitlab-az-c

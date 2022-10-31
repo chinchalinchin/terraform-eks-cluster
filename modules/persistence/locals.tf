@@ -1,4 +1,5 @@
 locals {
+    availability_zones                                  = [ "b", "c" ]
     rds_dbname                                          = "gitlabhq_production"
     rds_monitor_interval                                = 10
     rds_name                                            = "automation-library-gitlab-postgres"

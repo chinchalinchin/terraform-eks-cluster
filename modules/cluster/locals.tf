@@ -19,4 +19,5 @@ locals {
                                                             Team            = "BrightLabs"
                                                             Service         = "eks"
                                                         }
+    k8s_version                                         = 1.22
 }

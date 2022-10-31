@@ -39,8 +39,35 @@ certmanager-issuer:
 gitlab-runner:
   install: false
 
+gitlab:
+  gitaly:
+    # see: https://gitlab.com/gitlab-org/charts/gitlab/blob/master/examples/storage/helm_options.yml
+    persistence:
+      storageClass: gp2
+      size: 50Gi
+
+minio:
+  # see: https://gitlab.com/gitlab-org/charts/gitlab/blob/master/examples/storage/helm_options.yml
+  persistence:
+    storageClass: gp2
+    size: 10Gi
+
+redis:
+  # see: https://gitlab.com/gitlab-org/charts/gitlab/blob/master/examples/storage/helm_options.yml
+  master:
+    persistence:
+      storageClass: gp2
+      size: 5Gi
+
 postgresql:
   install: false
+  # persistence:
+  #   storageClass: CUSTOM_STORAGE_CLASS_NAME
+  #   size: 8Gi
+
+
+
+##### ELB CONFIGURATIONS
 
 ### ELB OSI LAYER 7 CONFIGURATION
 ## see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/examples/aws/elb-layer7-loadbalancer.yaml
