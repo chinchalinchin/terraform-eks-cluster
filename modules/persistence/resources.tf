@@ -32,7 +32,7 @@ resource "aws_secretsmanager_secret" "rds_password_secret"{
 }
 
 
-resource "aws_secretsmanager_secret_version" "gitlab_rds_password_secret_version" {
+resource "aws_secretsmanager_secret_version" "rds_password_secret_version" {
     secret_id                                           = aws_secretsmanager_secret.rds_password_secret.id
     secret_string                                       = random_password.rds_password.result
 }
@@ -70,7 +70,7 @@ resource "aws_security_group_rule" "database_ingress" {
 /**
  * For GitLab external DB requirements, see: https://docs.gitlab.com/charts/advanced/external-db/index.html
 **/
-resource "aws_db_instance" "rds" {
+resource "aws_db_instance" "cluster_rds" {
     allocated_storage                                   = 20
     db_name                                             = local.rds_dbname
     db_subnet_group_name                                = aws_db_subnet_group.rds_subnets.id
@@ -100,11 +100,23 @@ resource "aws_db_instance" "rds" {
 }
 
 
-resource "aws_ebs_volume" "example" {
-  availability_zone = "us-west-2a"
-  size              = 40
+resource "aws_ebs_volume" "cluster_volumes" {
+  for_each                                              = toset(local.availability_zones)
 
-  tags = {
-    Name = "HelloWorld"
-  }
+  availability_zone                                     = format("%s%s",
+                                                            var.region,
+                                                            local.availability_zones[
+                                                                index(
+                                                                    toset(local.availability_zones), 
+                                                                    each.value
+                                                                )
+                                                            ]
+                                                        )
+  size                                                  = local.ebs_volume_size
+  tags                                                  = merge(
+                                                            local.ebs_tags,
+                                                            { 
+                                                                "Name" = "${var.cluster_name}-volume-${each.key}"
+                                                            }
+                                                        )
 }

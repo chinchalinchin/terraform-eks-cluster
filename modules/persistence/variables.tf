@@ -5,6 +5,13 @@ variable "cluster_name" {
 }
 
 
+variable "region" {
+    description                         = "Region where resources are deployed"
+    type                               = string
+    default                             = "us-east-1"
+}
+
+
 variable "iam_config" {
     description                     = "IAM configuration for cluster roles and bastion instance profile"
     type = object({
