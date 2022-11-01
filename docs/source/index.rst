@@ -11,5 +11,6 @@ Welcome to your-project's documentation!
    MODULE_CLUSTER
    MODULE_PERSISTENCE
    CONFIGURATION
+   ENVIRONMENT
    CONTRIBUTING
    APPENDIX
