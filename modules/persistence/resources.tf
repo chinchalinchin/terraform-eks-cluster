@@ -1,4 +1,4 @@
-resource "aws_kms_key" "rds_key" {
+resource "aws_kms_key" "persistence_key" {
     description                                         = "KMS key for encrypting relational database service secrets"
     deletion_window_in_days                             = 10
     enable_key_rotation                                 = true
@@ -67,11 +67,29 @@ resource "aws_security_group_rule" "database_ingress" {
 } 
 
 
+resource "aws_db_parameter_group" "cluster_rds_parameter_group" {
+    name                                                = "automation-library-gitlab-postgresql-param-group"
+    family                                              = "postgres13"
+
+    parameter {
+        name                                            = "log_statement"
+        value                                           = "all"
+    }
+
+    parameter {
+        name                                            = "log_min_duration_statement"
+        value                                           = "1"
+    }
+}
+
+
 /**
  * For GitLab external DB requirements, see: https://docs.gitlab.com/charts/advanced/external-db/index.html
 **/
 resource "aws_db_instance" "cluster_rds" {
+    #checkov:skip=CKV_AWS_161: "Ensure RDS database has IAM authentication enabled"
     allocated_storage                                   = local.rds_storage
+    auto_minor_version_upgrade                          = true
     backup_retention_period                             = 5
     preferred_backup_window                             = "07:00-09:00"
     db_name                                             = local.rds_dbname
@@ -81,11 +99,12 @@ resource "aws_db_instance" "cluster_rds" {
                                                         ]
     engine                                              = "postgres"
     engine_version                                      = "13.7"
-    kms_key_id                                          = aws_kms_key.rds_key.arn
+    kms_key_id                                          = aws_kms_key.persistence_key.arn
     identifier                                          = local.rds_name
     instance_class                                      = local.rds_size
     monitoring_role_arn                                 = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.rds_monitor_role_name}"
     monitoring_interval                                 = local.rds_monitor_interval
+    multi_az                                            = true 
     password                                            = random_password.rds_password.result
     performance_insights_enabled                        = true
     performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn
@@ -107,6 +126,7 @@ resource "aws_ebs_volume" "cluster_volumes" {
 
   availability_zone                                     = "${var.region}${local.availability_zones[each.key]}"
   encrypted                                             = true
+  kms_key_id                                            = aws_kms_key.persistence_key.arn
   size                                                  = local.ebs_volume_size
   tags                                                  = merge(
                                                             local.ebs_tags,

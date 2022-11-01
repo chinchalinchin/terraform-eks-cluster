@@ -3,6 +3,7 @@
 
 
 resource "aws_vpc" "automation_library_vpc" {
+    #checkov:skip=CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
     cidr_block                                  = local.vpc_cidr
     enable_dns_hostnames                        = true
     enable_dns_support                          = true
@@ -14,6 +15,14 @@ resource "aws_vpc" "automation_library_vpc" {
                                                         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
                                                     }
                                                 )
+}
+
+
+resource "aws_flow_log" "automation_library_vpc_flow_log" {
+    iam_role_arn                                = var.iam_config.vpc_flow_logs_role_name
+    log_destination                             = "log"
+    traffic_type                                = "ALL"
+    vpc_id                                      = aws_vpc.automation_library_vpc.id
 }
 
 

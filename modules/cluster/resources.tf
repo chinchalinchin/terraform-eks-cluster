@@ -97,21 +97,18 @@ resource "aws_route53_record" "bastion_public_record" {
 }
 
 resource "aws_instance" "automation_library_bastion_host" {
+    #checkov:skip=CKV_AWS_88: "EC2 instance should not have public IP."
+    #   NOTE: Security restricts traffic to IP whitelist.
     depends_on                                          = [
                                                             aws_eks_cluster.automation_library_cluster
                                                         ]
+                                                        
     ami                                                 = var.bastion_config.ami
     associate_public_ip_address                         = true
+    ebs_optimized                                       = true
     key_name                                            = var.ssh_key
     iam_instance_profile                                = var.iam_config.bastion_profile_name
     instance_type                                       = "t3.xlarge"
-    user_data                                           = templatefile("${path.root}/scripts/user-data.sh", {
-                                                            eks_cluster_name = var.cluster_name
-                                                            aws_default_region = var.region
-                                                        })
-    vpc_security_group_ids                              = [
-                                                            aws_security_group.remote_access_sg.id
-                                                        ]
     subnet_id                                           = data.aws_subnets.cluster_public_subnets.ids[0]
     tags                                                = merge(
                                                             local.ec2_tags,
@@ -119,8 +116,16 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                                 Name = "automation-library-bastion-host"
                                                             }
                                                         )
-                                                        
+    user_data                                           = templatefile("${path.root}/scripts/user-data.sh", {
+                                                            eks_cluster_name = var.cluster_name
+                                                            aws_default_region = var.region
+                                                        })
+    vpc_security_group_ids                              = [
+                                                            aws_security_group.remote_access_sg.id
+                                                        ]
+
     metadata_options {
+        http_endpoint                                   = "enabled"
         http_tokens                                     = "required"
     }
 
@@ -130,13 +135,13 @@ resource "aws_instance" "automation_library_bastion_host" {
 }
 
 
-resource "aws_eip" "cluster_ip" {
-    vpc                                                 = true
-    tags                                                = local.eks_tags
-}
-
-
 resource "aws_eks_cluster" "automation_library_cluster" {
+    #checkov:skip=CKV_AWS_38: "Ensure Amazon EKS public endpoint not accessible to 0.0.0.0/0"
+    #checkov:skip=CKV_AWS_39: "Ensure Amazon EKS public endpoint disabled"
+    #   NOTE #1: "0.0.0.0/0" is the default value when `enabled_public_access` is false, but checkov
+    #         seems to think it isn't...
+    #   NOTE #2: Public endpoints are disabled when `production` is true. They are enabled otherwise,
+    #           for debugging purposes.
     enabled_cluster_log_types                           = local.eks_logging
     name                                                = var.cluster_name
     role_arn                                            = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.cluster_role_name}"
@@ -155,7 +160,7 @@ resource "aws_eks_cluster" "automation_library_cluster" {
 
     vpc_config {
         endpoint_private_access                         = true
-        endpoint_public_access                          = true
+        endpoint_public_access                          = !var.production
         public_access_cidrs                             = var.production ? local.default_access_cidr : var.source_ips 
         security_group_ids                              = [
                                                             aws_security_group.remote_access_sg.id
