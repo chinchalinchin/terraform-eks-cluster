@@ -68,8 +68,8 @@ resource "aws_security_group_rule" "database_ingress" {
 
 
 resource "aws_db_parameter_group" "cluster_rds_parameter_group" {
-    name                                                = "automation-library-gitlab-postgresql-param-group"
     family                                              = "postgres13"
+    name                                                = local.rds_param_group_name
 
     parameter {
         name                                            = "log_statement"
@@ -106,6 +106,7 @@ resource "aws_db_instance" "cluster_rds" {
     monitoring_interval                                 = local.rds_monitor_interval
     multi_az                                            = true 
     password                                            = random_password.rds_password.result
+    parameter_group_name                                = local.rds_param_group_name
     performance_insights_enabled                        = true
     performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn
     port                                                = 5432

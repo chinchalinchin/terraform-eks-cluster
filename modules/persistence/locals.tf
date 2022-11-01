@@ -11,6 +11,7 @@ locals {
                                                         }
     rds_dbname                                          = "gitlabhq_production"
     rds_monitor_interval                                = 10
+    rds_param_group_name                                = "automation-library-gitlab-postgresql-param-group"
     rds_name                                            = "automation-library-gitlab-postgres"
     rds_tags                                            = {
                                                             Organization    = "AutomationLibrary"

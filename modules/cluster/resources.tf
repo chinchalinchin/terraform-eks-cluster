@@ -102,13 +102,14 @@ resource "aws_instance" "automation_library_bastion_host" {
     depends_on                                          = [
                                                             aws_eks_cluster.automation_library_cluster
                                                         ]
-                                                        
+
     ami                                                 = var.bastion_config.ami
     associate_public_ip_address                         = true
     ebs_optimized                                       = true
     key_name                                            = var.ssh_key
     iam_instance_profile                                = var.iam_config.bastion_profile_name
     instance_type                                       = "t3.xlarge"
+    monitoring                                          = true 
     subnet_id                                           = data.aws_subnets.cluster_public_subnets.ids[0]
     tags                                                = merge(
                                                             local.ec2_tags,
