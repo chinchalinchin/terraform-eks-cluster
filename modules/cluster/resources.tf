@@ -119,6 +119,14 @@ resource "aws_instance" "automation_library_bastion_host" {
                                                                 Name = "automation-library-bastion-host"
                                                             }
                                                         )
+                                                        
+    metadata_options {
+        http_tokens                                     = "required"
+    }
+
+    root_block_device {
+        encrypted                                       = true
+    }
 }
 
 

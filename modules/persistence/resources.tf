@@ -72,6 +72,8 @@ resource "aws_security_group_rule" "database_ingress" {
 **/
 resource "aws_db_instance" "cluster_rds" {
     allocated_storage                                   = local.rds_storage
+    backup_retention_period                             = 5
+    preferred_backup_window                             = "07:00-09:00"
     db_name                                             = local.rds_dbname
     db_subnet_group_name                                = aws_db_subnet_group.rds_subnets.id
     enabled_cloudwatch_logs_exports                     = [ 
@@ -104,6 +106,7 @@ resource "aws_ebs_volume" "cluster_volumes" {
   for_each                                              = local.availability_zones
 
   availability_zone                                     = "${var.region}${local.availability_zones[each.key]}"
+  encrypted                                             = true
   size                                                  = local.ebs_volume_size
   tags                                                  = merge(
                                                             local.ebs_tags,

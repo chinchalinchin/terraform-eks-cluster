@@ -81,7 +81,7 @@ resource "aws_subnet"   "automation_library_public_subnet" {
     
     availability_zone                           = "${var.region}${local.availability_zones[each.key]}"
     cidr_block                                  = local.public_subnet_cidrs[each.key]
-    map_public_ip_on_launch                     = true
+    map_public_ip_on_launch                     = false
     tags                                        = merge(
                                                     local.vpc_tags,
                                                     {
