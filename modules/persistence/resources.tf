@@ -94,12 +94,14 @@ resource "aws_db_instance" "cluster_rds" {
     preferred_backup_window                             = "07:00-09:00"
     db_name                                             = local.rds_dbname
     db_subnet_group_name                                = aws_db_subnet_group.rds_subnets.id
+    deletion_protection                                 = true
     enabled_cloudwatch_logs_exports                     = [ 
                                                             "postgresql" 
                                                         ]
     engine                                              = "postgres"
     engine_version                                      = "13.7"
     kms_key_id                                          = aws_kms_key.persistence_key.arn
+    iam_database_authentication_enabled                 = true
     identifier                                          = local.rds_name
     instance_class                                      = local.rds_size
     monitoring_role_arn                                 = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.iam_config.rds_monitor_role_name}"

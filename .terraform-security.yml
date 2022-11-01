@@ -3,3 +3,4 @@ minimum_severity: MEDIUM
 exclude:
   - aws-ec2-no-public-egress-sgr
   - aws-eks-no-public-cluster-access
+  - aws-rds-enable-deletion-protection
