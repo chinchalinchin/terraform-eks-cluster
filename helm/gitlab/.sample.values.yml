@@ -1,3 +1,4 @@
+# for default chart, see: https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/values.yaml
 global:
   hosts:
     domain: bahmulticloud.com
@@ -23,15 +24,24 @@ global:
     # ssh: gitlab.bahmulticloud.com
   psql:
     host: <rds-host>
-    password:
-      secret: automation-library-gitlab-postgresql-password
+     password:
+      useSecret: true
+      secret: automation-library-gitlab-postgresql-credentials
+      key: postgresql-password
     port: 5432
     database: gitlabhq_production
-    username: gitlab
-  # ingress:
-  #   configureCertmanager: false
-  #   tls:
-  #     enabled: false
+    username: 
+      useSecret: true
+      secret: automation-library-gitlab-postgresql-credentials
+      key:  postgresql-username
+  ingress:
+    # configureCertmanager: false
+    tls:
+      enabled: false
+      # shell:
+      #   tcp:
+      #     proxyProtocol: true
+
 
 certmanager-issuer:
   email: "625518@bah.com"
@@ -45,6 +55,25 @@ gitlab:
     persistence:
       storageClass: gp2
       size: 50Gi
+
+# see: https://gitlab.com/gitlab-org/charts/gitlab/blob/master/charts/nginx-ingress/README.md
+nginx-ingress:
+  controller:
+    config:
+      # pass the X-Forwarded-* headers directly from the upstream
+      use-forwarded-headers: "true" 
+    service:
+      annotations:
+        domainName: "bah.multicloud.com"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <cert-arn>
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+      labels:
+        dns: "route53"
+      targetPorts:
+        https: http
+        http: http
 
 minio:
   # see: https://gitlab.com/gitlab-org/charts/gitlab/blob/master/examples/storage/helm_options.yml
@@ -66,7 +95,7 @@ postgresql:
   #   size: 8Gi
 
 
-
+####### SAMPLES
 ##### ELB CONFIGURATIONS
 
 ### ELB OSI LAYER 7 CONFIGURATION

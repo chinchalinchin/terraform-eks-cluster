@@ -1,6 +1,9 @@
 locals {
-    availability_zones                                  = [ "b", "c" ]
-    ebs_volume_size                                     = 10
+    availability_zones                                  = {
+        0 = "b"
+        1 = "c"
+    } 
+    ebs_volume_size                                     = 200
     ebs_tags                                            = {
                                                             Organization    = "AutomationLibrary"
                                                             Team            = "BrightLabs"
@@ -16,6 +19,7 @@ locals {
                                                             Engine          = "postgresql"
                                                         }
     rds_size                                            = "db.t3.medium"
+    rds_storage                                         = 50
     rds_user                                            = "gitlab"
     special_chars                                       = "!#$%&*?"
 }

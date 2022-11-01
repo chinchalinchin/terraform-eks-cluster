@@ -71,7 +71,7 @@ resource "aws_security_group_rule" "database_ingress" {
  * For GitLab external DB requirements, see: https://docs.gitlab.com/charts/advanced/external-db/index.html
 **/
 resource "aws_db_instance" "cluster_rds" {
-    allocated_storage                                   = 20
+    allocated_storage                                   = local.rds_storage
     db_name                                             = local.rds_dbname
     db_subnet_group_name                                = aws_db_subnet_group.rds_subnets.id
     enabled_cloudwatch_logs_exports                     = [ 
@@ -101,22 +101,14 @@ resource "aws_db_instance" "cluster_rds" {
 
 
 resource "aws_ebs_volume" "cluster_volumes" {
-  for_each                                              = toset(local.availability_zones)
+  for_each                                              = local.availability_zones
 
-  availability_zone                                     = format("%s%s",
-                                                            var.region,
-                                                            local.availability_zones[
-                                                                index(
-                                                                    toset(local.availability_zones), 
-                                                                    each.value
-                                                                )
-                                                            ]
-                                                        )
+  availability_zone                                     = "${var.region}${local.availability_zones[each.key]}"
   size                                                  = local.ebs_volume_size
   tags                                                  = merge(
                                                             local.ebs_tags,
                                                             { 
-                                                                "Name" = "${var.cluster_name}-volume-${each.key}"
+                                                                "Name" = "${var.cluster_name}-volume-${var.region}${each.value}"
                                                             }
                                                         )
 }

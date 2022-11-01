@@ -8,7 +8,10 @@ locals {
                                     "10.1.20.0/24"
                                 ]
     # note: b,c get selected when count = 2.
-    availability_zones          = [ "b", "c" ]
+    availability_zones                                  = {
+        0 = "b"
+        1 = "c"
+    }     
     vpc_cidr                    = "10.1.0.0/16"
     vpc_tags                    = {
                                     Organization    = "AutomationLibrary"

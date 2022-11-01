@@ -3,6 +3,11 @@ output "rds-endpoint" {
 }
 
 
+output "ebs-arns" {
+    value                                               = module.persistence.ebs-arns
+}
+
+
 output "bastion-ip" {
     value                                               = module.cluster.bastion-ip
 }

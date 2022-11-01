@@ -5,6 +5,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source $SCRIPT_DIR/../.env
 
+export HELM_RELEASE="automation-libray-gitlab"
+
 helm uninstall ${HELM_RELEASE}
 
 kubectl delete secret ${HELM_RELEASE}-acme-key

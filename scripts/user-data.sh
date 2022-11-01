@@ -4,6 +4,8 @@
 apt update -y
 apt install -y \
     ubuntu-desktop \
+    postgresql \
+    postgresql-contrib \
     xrdp \
     xfce4 \
     xfce4-session
