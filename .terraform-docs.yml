@@ -22,29 +22,3 @@ content: |-
   {{ .Inputs }}
 
   {{ .Outputs }}  
-
-  ## Usage
-
-  To use this module, you will need to include it in your terraform (or run it standalone) and pass the required variables, like so:
-
-  ```hcl
-  {{ include "examples/generic/main.tf" }}
-  ```
-
-  Existing examples are listed in following sections
-    
-  {{ include "examples/generic/Readme.MD" }}
-  
-  See examples/generic.
-
-  {{ include "examples/vpcexternal/Readme.MD" }}
-
-  See examples/vpcexternal.
-
-  {{ include "examples/vpcinternal/Readme.MD" }}
-
-  See examples/vpcinternal.
-
-  {{ include "examples/xraytracing/Readme.MD" }}
-
-  See examples/xraytracing.
