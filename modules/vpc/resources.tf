@@ -18,12 +18,12 @@ resource "aws_vpc" "automation_library_vpc" {
 }
 
 
-resource "aws_flow_log" "automation_library_vpc_flow_log" {
-    iam_role_arn                                = var.iam_config.vpc_flow_logs_role_name
-    log_destination                             = "log"
-    traffic_type                                = "ALL"
-    vpc_id                                      = aws_vpc.automation_library_vpc.id
-}
+# resource "aws_flow_log" "automation_library_vpc_flow_log" {
+#     iam_role_arn                                = var.iam_config.vpc_flow_logs_role_name
+#     log_destination                             = "log"
+#     traffic_type                                = "ALL"
+#     vpc_id                                      = aws_vpc.automation_library_vpc.id
+# }
 
 
 resource "aws_internet_gateway" "automation_library_internet_gateway" {

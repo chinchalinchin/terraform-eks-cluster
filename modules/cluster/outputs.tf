@@ -3,11 +3,6 @@ output "bastion-ip" {
 }
 
 
-output "cluster-ip" {
-    value                                               = aws_eip.cluster_ip.public_ip
-}
-
-
 output "cluster_endpoint" {
     value                                               = aws_eks_cluster.automation_library_cluster.endpoint
 }

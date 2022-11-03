@@ -27,7 +27,7 @@ resource "random_string" "random_id" {
 
 resource "aws_secretsmanager_secret" "rds_password_secret"{
     description                                         = "Password for RDS superuser"
-    kms_key_id                                          = aws_kms_key.rds_key.id
+    kms_key_id                                          = aws_kms_key.persistence_key.id
     name                                                = "automation-library-postgresql-password-${random_string.random_id.result}"
 }
 
@@ -91,7 +91,7 @@ resource "aws_db_instance" "cluster_rds" {
     allocated_storage                                   = local.rds_storage
     auto_minor_version_upgrade                          = true
     backup_retention_period                             = 5
-    preferred_backup_window                             = "07:00-09:00"
+    # preferred_backup_window                             = "07:00-09:00"
     db_name                                             = local.rds_dbname
     db_subnet_group_name                                = aws_db_subnet_group.rds_subnets.id
     deletion_protection                                 = true
@@ -110,7 +110,7 @@ resource "aws_db_instance" "cluster_rds" {
     password                                            = random_password.rds_password.result
     parameter_group_name                                = aws_db_parameter_group.cluster_rds_parameter_group.name
     performance_insights_enabled                        = true
-    performance_insights_kms_key_id                     = aws_kms_key.rds_key.arn
+    performance_insights_kms_key_id                     = aws_kms_key.persistence_key.arn
     port                                                = 5432
     publicly_accessible                                 = false
     skip_final_snapshot                                 = true
