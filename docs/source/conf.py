@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 # NOTE: Add your project's information here.
-project = 'Action Workflows'
+project = 'AWS EKS Managed Node Cluster'
 copyright = 'Automation Library, 2022'
 author = 'Booz Allen Hamilton'
 release = '1.0.0'
@@ -19,13 +19,18 @@ release = '1.0.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['myst_parser', 'sphinx.ext.githubpages']
+extensions = [
+    'myst_parser', 
+    'sphinx.ext.githubpages'
+]
 source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
 }
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = [
+    '_templates'
+]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -60,15 +65,15 @@ html_theme_options = {
 
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
-    'base_url': 'https://pages.github.boozallencsn.com/AutomationLibrary/actions-workflows/',
+    'base_url': 'https://pages.github.boozallencsn.com/AutomationLibrary/aws-eks-managed-cluster/',
 
     # Set the color and the accent color
     'color_primary': 'blue',
     'color_accent': 'light-blue',
 
     # Set the repo location to get a badge with stats
-    'repo_url': 'https://github.boozallencsn.com/AutomationLibrary/actions-workflows',
-    'repo_name': 'action-workflows',
+    'repo_url': 'https://github.boozallencsn.com/AutomationLibrary/aws-eks-managed-cluster',
+    'repo_name': 'aws-eks-managed-cluster',
 
     # Visible levels of the global TOC; -1 means unlimited
     'globaltoc_depth': 2,
