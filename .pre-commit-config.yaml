@@ -1,0 +1,28 @@
+repos:
+- repo: https://github.com/gruntwork-io/pre-commit
+  rev: v0.1.12 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
+  hooks:
+    - id: terraform-validate
+    - id: terraform-fmt
+    - id: tflint
+      args:
+        - "--init"
+        - "--module"
+        - "--config=.tflint.hcl"
+
+- repo: https://github.com/terraform-docs/terraform-docs
+  rev: v0.12.0
+  hooks:
+    - id: terraform-docs-system
+      args:
+        - "markdown"
+        - "table"
+        - "./"
+        - "--recursive"
+        - "--output-file=README.md"
+
+- repo: git://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.50.0 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+  hooks:
+    - id: terraform_tfsec
+    - id: checkov

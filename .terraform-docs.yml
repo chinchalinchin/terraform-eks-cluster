@@ -1,0 +1,24 @@
+formatter: "markdown table"
+
+sections:
+  hide:
+    - providers
+    - resources
+    - requirements
+
+recursive:
+  enabled: true
+  path: modules
+
+output:
+  file: ./docs/source/OVERVIEW.md
+  mode: inject
+
+content: |-
+  {{ .Header }}
+
+  {{ .Modules }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

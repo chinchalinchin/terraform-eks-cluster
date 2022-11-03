@@ -1,0 +1,2 @@
+- create 'jira' database in rds.
+- secret key updates for rds in gitlab and jira charts

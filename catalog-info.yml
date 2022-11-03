@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: aws-eks-managed-cluster
+  title: AWS EKS Managed EC2 Node Cluster
+  description: An EKS cluster 
+  ## NOTE: UNCOMMENT AND ADJUST WHEN DOCS WORKING
+  links:
+    - url: https://pages.github.boozallencsn.com/AutomationLibrary/aws-eks-managed-cluster/index.html
+      title: Documentation
+  annotations:
+  ## NOTE: see above
+  #   backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: AutomationLibrary/aws-eks-managed-cluster
+  tags:
+    - aws
+    - eks
+    - kubernetes
+    - terraform
+spec:
+  type: library
+  lifecycle: production
+  owner: AutomationLibrary/BrightLabs
